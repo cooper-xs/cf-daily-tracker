@@ -121,32 +121,34 @@ export function RatingDistribution({
                 {/* 进度条 */}
                 <div className="flex-1 h-6 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden relative">
                   {resultFilter === 'all' ? (
-                    // 全部模式：堆叠进度条
+                    // 全部模式：堆叠进度条（通过部分用难度色，未通过用浅色背景）
                     <>
+                      {/* 未通过部分 - 难度对应的浅色背景 */}
                       <div
                         className="absolute left-0 top-0 h-full rounded-full transition-all duration-300"
                         style={{
                           width: `${Math.max((item.attempted / maxAttempted) * 100, item.attempted > 0 ? 4 : 0)}%`,
-                          backgroundColor: item.color + '40',
+                          backgroundColor: item.color + '30',
                           zIndex: 1,
                         }}
                       />
+                      {/* 通过部分 - 难度对应的颜色 */}
                       <div
                         className="absolute left-0 top-0 h-full rounded-full transition-all duration-300"
                         style={{
                           width: `${Math.max((item.solved / maxAttempted) * 100, item.solved > 0 ? 4 : 0)}%`,
-                          backgroundColor: '#22c55e', // 绿色-通过
+                          backgroundColor: item.color,
                           zIndex: 2,
                         }}
                       />
                       {/* 文字 */}
                       <div className="absolute inset-0 flex items-center px-2 z-10">
                         {item.attempted >= 2 ? (
-                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300 drop-shadow-sm">
+                          <span className="text-xs font-medium text-white dark:text-white drop-shadow-sm">
                             {item.solved}/{item.attempted}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
+                          <span className="text-xs text-white dark:text-white drop-shadow-sm">
                             {item.attempted}题
                           </span>
                         )}
