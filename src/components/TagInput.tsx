@@ -32,14 +32,22 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
   };
 
   // 处理键盘事件
+  // 回车：添加标签
+  // Shift+回车：执行搜索
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (inputValue.trim()) {
-        addTag(inputValue);
-      } else if (tags.length > 0) {
-        // 输入框为空时按回车，直接搜索
-        onSearch(tags);
+      if (e.shiftKey) {
+        // Shift+回车：执行搜索
+        handleSearch();
+      } else {
+        // 普通回车：添加标签
+        if (inputValue.trim()) {
+          addTag(inputValue);
+        } else if (tags.length > 0) {
+          // 输入框为空但有标签时，直接搜索
+          onSearch(tags);
+        }
       }
     } else if (e.key === 'Backspace' && !inputValue && tags.length > 0) {
       // 输入框为空时按退格，删除最后一个标签
@@ -176,7 +184,7 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
           {t('user.inputHint')} · 已添加 {tags.length}/10 个用户
         </p>
         <p className="text-gray-400 dark:text-gray-500 text-xs">
-          回车添加 · 退格删除 · 逗号/空格分隔
+          回车添加 · Shift+回车查询 · 退格删除 · 逗号/空格分隔
         </p>
       </div>
     </div>
