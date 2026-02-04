@@ -159,7 +159,7 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
               className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300
                          transition-colors"
             >
-              清空
+              {t('user.clear')}
             </button>
           )}
           <button
@@ -181,10 +181,10 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
       {/* 提示信息 */}
       <div className="flex items-center justify-between text-sm">
         <p className="text-gray-500 dark:text-gray-400">
-          {t('user.inputHint')} · 已添加 {tags.length}/10 个用户
+          {t('user.inputHint')} · {t('user.added')} {tags.length}/10 {t('user.users')}
         </p>
         <p className="text-gray-400 dark:text-gray-500 text-xs">
-          回车添加 · Shift+回车查询 · 退格删除 · 逗号/空格分隔
+          {t('user.keyboardHint')}
         </p>
       </div>
     </div>

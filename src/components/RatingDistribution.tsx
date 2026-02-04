@@ -149,7 +149,7 @@ export function RatingDistribution({
                           </span>
                         ) : (
                           <span className="text-xs text-white dark:text-white drop-shadow-sm">
-                            {item.attempted}题
+                            {item.attempted}
                           </span>
                         )}
                       </div>
@@ -223,6 +223,7 @@ interface RatingFilterTagsProps {
 }
 
 export function RatingFilterTags({ selectedRange, onClear }: RatingFilterTagsProps) {
+  const { t } = useTranslation();
   if (!selectedRange || selectedRange.min === null || selectedRange.max === null) return null;
 
   const range = RATING_RANGES.find(r => r.min === selectedRange.min && r.max === selectedRange.max);
@@ -230,7 +231,7 @@ export function RatingFilterTags({ selectedRange, onClear }: RatingFilterTagsPro
 
   return (
     <div className="mb-3 flex items-center gap-2">
-      <span className="text-sm text-gray-500 dark:text-gray-400">筛选: </span>
+      <span className="text-sm text-gray-500 dark:text-gray-400">{t('filter.filterLabel')}: </span>
       <span
         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium"
         style={{
