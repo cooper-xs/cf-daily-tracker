@@ -3,3 +3,4 @@ export { UserCard } from './UserCard';
 export { SubmissionList } from './SubmissionList';
 export { LanguageSwitcher } from './LanguageSwitcher';
 export { ErrorMessage } from './ErrorMessage';
+export { DateRangePicker } from './DateRangePicker';

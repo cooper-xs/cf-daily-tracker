@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { SearchInput, UserCard, SubmissionList, LanguageSwitcher, ErrorMessage } from './components';
+import { SearchInput, UserCard, SubmissionList, LanguageSwitcher, ErrorMessage, DateRangePicker } from './components';
 import { useUserQuery } from './hooks';
 import './i18n';
 
@@ -8,7 +8,7 @@ import './i18n';
  */
 function App() {
   const { t } = useTranslation();
-  const { loading, error, users, submissions, queryUsers, clearError } = useUserQuery();
+  const { loading, error, users, submissions, startDate, endDate, setDateRange, queryUsers, clearError } = useUserQuery();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -26,6 +26,20 @@ function App() {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {t('user.title')}
           </h2>
+
+          {/* 日期范围选择 */}
+          <div className="mb-4">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('date.dateRange')}
+            </h3>
+            <DateRangePicker
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={(date) => setDateRange(date, endDate)}
+              onEndDateChange={(date) => setDateRange(startDate, date)}
+            />
+          </div>
+
           <SearchInput onSearch={queryUsers} loading={loading} />
         </section>
 

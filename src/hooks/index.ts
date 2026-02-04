@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { CFUser, CFSubmission } from '../types';
-import { getUserInfo, getUsersTodaySubmissions } from '../api/codeforces';
+import { getUserInfo, getUsersTodaySubmissions, getUsersSubmissionsByDateRange } from '../api/codeforces';
 import { parseHandles, addSearchHistory } from '../utils';
 
 interface QueryState {
@@ -8,10 +8,20 @@ interface QueryState {
   error: string | null;
   users: CFUser[];
   submissions: Map<string, CFSubmission[]>;
+  startDate: string;
+  endDate: string;
+}
+
+// 获取今日日期字符串 (YYYY-MM-DD)
+function getTodayString(): string {
+  const now = new Date();
+  const utc8Time = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  return utc8Time.toISOString().split('T')[0];
 }
 
 /**
  * 用户查询 Hook
+ * 支持日期范围选择
  */
 export function useUserQuery() {
   const [state, setState] = useState<QueryState>({
@@ -19,7 +29,13 @@ export function useUserQuery() {
     error: null,
     users: [],
     submissions: new Map(),
+    startDate: getTodayString(),
+    endDate: getTodayString(),
   });
+
+  const setDateRange = useCallback((startDate: string, endDate: string) => {
+    setState(prev => ({ ...prev, startDate, endDate }));
+  }, []);
 
   const queryUsers = useCallback(async (input: string) => {
     const handles = parseHandles(input);
@@ -39,24 +55,30 @@ export function useUserQuery() {
           ...prev,
           loading: false,
           error: '未找到用户',
-          users: [],
-          submissions: new Map(),
         }));
         return;
       }
 
-      // 获取今日提交记录
-      const submissions = await getUsersTodaySubmissions(handles);
+      // 获取指定日期范围内的提交记录
+      let submissions: Map<string, CFSubmission[]>;
+      if (state.startDate === state.endDate && state.startDate === getTodayString()) {
+        // 如果是今天，使用今日查询函数（兼容旧逻辑）
+        submissions = await getUsersTodaySubmissions(handles);
+      } else {
+        // 使用日期范围查询
+        submissions = await getUsersSubmissionsByDateRange(handles, state.startDate, state.endDate);
+      }
       
       // 保存搜索历史
       addSearchHistory(handles);
 
-      setState({
+      setState(prev => ({
+        ...prev,
         loading: false,
         error: null,
         users,
         submissions,
-      });
+      }));
     } catch (error) {
       setState(prev => ({
         ...prev,
@@ -64,7 +86,7 @@ export function useUserQuery() {
         error: error instanceof Error ? error.message : '查询失败',
       }));
     }
-  }, []);
+  }, [state.startDate, state.endDate]);
 
   const clearError = useCallback(() => {
     setState(prev => ({ ...prev, error: null }));
@@ -72,6 +94,7 @@ export function useUserQuery() {
 
   return {
     ...state,
+    setDateRange,
     queryUsers,
     clearError,
   };

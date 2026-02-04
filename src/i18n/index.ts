@@ -23,7 +23,7 @@ const zhCN = {
     maxRating: '最高 Rating',
   },
   submission: {
-    title: '今日提交记录',
+    title: '提交记录',
     problem: '题目',
     verdict: '结果',
     time: '提交时间',
@@ -35,12 +35,21 @@ const zhCN = {
     memoryLimit: '超内存',
     runtimeError: '运行错误',
     compilationError: '编译错误',
-    noSubmissions: '今日暂无提交记录',
+    noSubmissions: '该时间段暂无提交记录',
   },
   problem: {
     difficulty: '难度',
     tags: '标签',
     rating: '分数',
+  },
+  date: {
+    startDate: '开始日期',
+    endDate: '结束日期',
+    today: '今天',
+    yesterday: '昨天',
+    last7Days: '近7天',
+    last30Days: '近30天',
+    dateRange: '日期范围',
   },
   errors: {
     apiLimit: '请求过于频繁，请稍后再试',
@@ -71,7 +80,7 @@ const enUS = {
     maxRating: 'Max Rating',
   },
   submission: {
-    title: "Today's Submissions",
+    title: 'Submissions',
     problem: 'Problem',
     verdict: 'Verdict',
     time: 'Time',
@@ -83,12 +92,21 @@ const enUS = {
     memoryLimit: 'Memory Limit Exceeded',
     runtimeError: 'Runtime Error',
     compilationError: 'Compilation Error',
-    noSubmissions: 'No submissions today',
+    noSubmissions: 'No submissions in this period',
   },
   problem: {
     difficulty: 'Difficulty',
     tags: 'Tags',
     rating: 'Rating',
+  },
+  date: {
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    last7Days: 'Last 7 Days',
+    last30Days: 'Last 30 Days',
+    dateRange: 'Date Range',
   },
   errors: {
     apiLimit: 'Too many requests, please try again later',

@@ -145,6 +145,48 @@ export async function getUsersTodaySubmissions(
 }
 
 /**
+ * 获取多个用户在指定日期范围内的提交记录
+ * @param handles 用户名列表
+ * @param startDate 开始日期 (YYYY-MM-DD)
+ * @param endDate 结束日期 (YYYY-MM-DD)
+ * @returns 每个用户的提交记录
+ */
+export async function getUsersSubmissionsByDateRange(
+  handles: string[],
+  startDate: string,
+  endDate: string
+): Promise<Map<string, CFSubmission[]>> {
+  const result = new Map<string, CFSubmission[]>();
+  
+  // 将日期转换为 UTC+8 的时间戳
+  const start = new Date(startDate + 'T00:00:00+08:00');
+  const end = new Date(endDate + 'T23:59:59+08:00');
+  
+  const startSeconds = Math.floor(start.getTime() / 1000);
+  const endSeconds = Math.floor(end.getTime() / 1000);
+  
+  // 依次查询每个用户
+  for (const handle of handles) {
+    try {
+      // 获取更多提交记录以确保覆盖日期范围
+      const submissions = await getUserStatus(handle, 1, 100);
+      
+      // 筛选指定日期范围内的提交记录
+      const filteredSubmissions = submissions.filter(
+        sub => sub.creationTimeSeconds >= startSeconds && sub.creationTimeSeconds <= endSeconds
+      );
+      
+      result.set(handle, filteredSubmissions);
+    } catch (error) {
+      console.error(`获取用户 ${handle} 的提交记录失败:`, error);
+      result.set(handle, []);
+    }
+  }
+  
+  return result;
+}
+
+/**
  * 格式化时间戳为本地时间字符串
  */
 export function formatTime(seconds: number): string {
