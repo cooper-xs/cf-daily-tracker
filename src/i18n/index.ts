@@ -51,6 +51,12 @@ const zhCN = {
     last30Days: '最近30天',
     dateRange: '日期范围',
   },
+  filter: {
+    all: '全部',
+    accepted: '通过',
+    rejected: '未通过',
+    noResults: '该筛选条件下无结果',
+  },
   errors: {
     apiLimit: '请求过于频繁，请稍后再试',
     userNotFound: '用户不存在',
@@ -107,6 +113,12 @@ const enUS = {
     last7Days: 'Last 7 Days',
     last30Days: 'Last 30 Days',
     dateRange: 'Date Range',
+  },
+  filter: {
+    all: 'All',
+    accepted: 'Accepted',
+    rejected: 'Rejected',
+    noResults: 'No results for this filter',
   },
   errors: {
     apiLimit: 'Too many requests, please try again later',
