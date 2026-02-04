@@ -55,7 +55,7 @@ export function getUserUrl(handle: string): string {
  * 获取难度颜色
  */
 export function getDifficultyColor(rating: number | undefined): string {
-  if (!rating) return '#808080';
+  if (rating === undefined || rating === null) return '#808080';
   if (rating < 1200) return '#808080'; // Newbie
   if (rating < 1400) return '#008000'; // Pupil
   if (rating < 1600) return '#03a89e'; // Specialist
@@ -72,7 +72,7 @@ export function getDifficultyColor(rating: number | undefined): string {
  * 获取难度标签
  */
 export function getDifficultyLabel(rating: number | undefined): string {
-  if (!rating) return 'Unrated';
+  if (rating === undefined || rating === null) return 'Unrated';
   if (rating < 1200) return 'Newbie';
   if (rating < 1400) return 'Pupil';
   if (rating < 1600) return 'Specialist';

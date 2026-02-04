@@ -44,7 +44,7 @@ export function RatingDistribution({
       // 该区间所有提交
       const rangeSubs = submissions.filter(sub => {
         const rating = sub.problem.rating;
-        if (!rating) return false;
+        if (rating === undefined || rating === null) return false;
         return rating >= range.min && rating <= range.max;
       });
 
@@ -221,7 +221,7 @@ interface RatingFilterTagsProps {
 }
 
 export function RatingFilterTags({ selectedRange, onClear }: RatingFilterTagsProps) {
-  if (!selectedRange || !selectedRange.min || !selectedRange.max) return null;
+  if (!selectedRange || selectedRange.min === null || selectedRange.max === null) return null;
 
   const range = RATING_RANGES.find(r => r.min === selectedRange.min && r.max === selectedRange.max);
   if (!range) return null;

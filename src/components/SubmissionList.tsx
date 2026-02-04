@@ -30,7 +30,7 @@ export function SubmissionList({ submissions }: SubmissionListProps) {
       // Rating 筛选
       if (ratingRange && ratingRange.min !== null && ratingRange.max !== null) {
         const rating = sub.problem.rating;
-        if (!rating || rating < ratingRange.min || rating > ratingRange.max) return false;
+        if (rating === undefined || rating === null || rating < ratingRange.min || rating > ratingRange.max) return false;
       }
       
       return true;
@@ -149,7 +149,7 @@ function SubmissionItem({ submission }: { submission: CFSubmission }) {
             {problem.contestId && `${problem.contestId}${problem.index} - `}
             {problem.name}
           </span>
-          {problem.rating && (
+          {problem.rating !== undefined && problem.rating !== null && (
             <span
               className="px-1.5 py-0.5 text-xs rounded font-medium shrink-0"
               style={{
