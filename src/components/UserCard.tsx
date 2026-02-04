@@ -6,14 +6,36 @@ import { RankColors } from '../types';
 interface UserCardProps {
   user: CFUser;
   submissionCount: number;
+  startDate: string;
+  endDate: string;
+}
+
+/**
+ * 获取 UTC+8 今日日期字符串
+ */
+function getTodayString(): string {
+  const now = new Date();
+  const utc8Time = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  return utc8Time.toISOString().split('T')[0];
 }
 
 /**
  * 用户信息卡片组件
  */
-export function UserCard({ user, submissionCount }: UserCardProps) {
+export function UserCard({ user, submissionCount, startDate, endDate }: UserCardProps) {
   const { t } = useTranslation();
   const rankColor = RankColors[user.rank] || '#808080';
+
+  // 判断是否今日
+  const today = getTodayString();
+  const isToday = startDate === today && endDate === today;
+  
+  // 日期范围标签
+  const dateLabel = isToday 
+    ? t('common.today') 
+    : startDate === endDate 
+      ? startDate 
+      : `${startDate}~${endDate}`;
 
   return (
     <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 
@@ -51,7 +73,7 @@ export function UserCard({ user, submissionCount }: UserCardProps) {
           <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{user.maxRating}</p>
         </div>
         <div className="p-2 rounded bg-gray-50 dark:bg-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400">{t('common.today')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 truncate" title={dateLabel}>{dateLabel}</p>
           <p className={`text-lg font-bold ${submissionCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
             {submissionCount}
           </p>

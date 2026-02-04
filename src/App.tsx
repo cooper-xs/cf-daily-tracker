@@ -77,6 +77,8 @@ function App() {
                   <UserCard
                     user={user}
                     submissionCount={submissions.get(user.handle)?.length || 0}
+                    startDate={startDate}
+                    endDate={endDate}
                   />
                 </div>
 
