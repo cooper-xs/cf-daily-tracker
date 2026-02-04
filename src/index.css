@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* 使用 class 策略切换暗色模式 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* 自定义主题色 */
   --color-primary: oklch(0.546 0.245 262.881);
@@ -18,11 +21,6 @@
   --color-cf-grandmaster: #ff0000;
   --color-cf-international-grandmaster: #ff0000;
   --color-cf-legendary-grandmaster: #ff0000;
-}
-
-/* 暗色模式支持 - 通过 class 切换 */
-.dark {
-  color-scheme: dark;
 }
 
 /* 基础样式 */

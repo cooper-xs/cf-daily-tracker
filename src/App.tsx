@@ -13,13 +13,17 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            {t('common.appName')}
+      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <h1 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <span className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-sm">
+              CF
+            </span>
+            <span className="hidden sm:inline">{t('common.appName')}</span>
           </h1>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <ThemeSwitcher theme={theme} onChange={setTheme} />
+            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700" />
             <LanguageSwitcher />
           </div>
         </div>
