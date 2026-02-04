@@ -121,16 +121,29 @@ function App() {
       </main>
 
       <footer className="border-t border-gray-200 dark:border-gray-700 mt-auto">
-        <div className="max-w-4xl mx-auto px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-          Data from{' '}
-          <a
-            href="https://codeforces.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            Codeforces
-          </a>
+        <div className="max-w-4xl mx-auto px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400 space-y-2">
+          <div>
+            Data from{' '}
+            <a
+              href="https://codeforces.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              Codeforces
+            </a>
+          </div>
+          <div>
+            Made with ❤️ by{' '}
+            <a
+              href="https://github.com/cooper-xs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline font-medium"
+            >
+              @cooper-xs
+            </a>
+          </div>
         </div>
       </footer>
     </div>
