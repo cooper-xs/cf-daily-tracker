@@ -57,6 +57,11 @@ const zhCN = {
     rejected: '未通过',
     noResults: '该筛选条件下无结果',
   },
+  rating: {
+    distribution: '难度分布',
+    difficulty: '难度',
+    allLevels: '全部难度',
+  },
   theme: {
     light: '浅色',
     dark: '深色',
@@ -124,6 +129,11 @@ const enUS = {
     accepted: 'Accepted',
     rejected: 'Rejected',
     noResults: 'No results for this filter',
+  },
+  rating: {
+    distribution: 'Rating Distribution',
+    difficulty: 'Difficulty',
+    allLevels: 'All Levels',
   },
   theme: {
     light: 'Light',
