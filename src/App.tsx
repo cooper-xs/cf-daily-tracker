@@ -16,9 +16,11 @@ function App() {
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <span className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-sm">
-              CF
-            </span>
+            <img 
+              src="/avatar.png" 
+              alt="logo" 
+              className="w-8 h-8 rounded-lg object-cover"
+            />
             <span className="hidden sm:inline">{t('common.appName')}</span>
           </h1>
           <div className="flex items-center gap-2">

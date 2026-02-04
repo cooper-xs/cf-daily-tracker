@@ -5,7 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // 中文翻译
 const zhCN = {
   common: {
-    appName: 'CF 今日打卡',
+    appName: '别让我逮到你',
     search: '查询',
     loading: '加载中...',
     error: '错误',
@@ -73,7 +73,7 @@ const zhCN = {
 // 英文翻译
 const enUS = {
   common: {
-    appName: 'CF Daily Tracker',
+    appName: "I'm watching you",
     search: 'Search',
     loading: 'Loading...',
     error: 'Error',
