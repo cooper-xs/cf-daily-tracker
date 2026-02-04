@@ -35,8 +35,7 @@ function App() {
             <DateRangePicker
               startDate={startDate}
               endDate={endDate}
-              onStartDateChange={(date) => setDateRange(date, endDate)}
-              onEndDateChange={(date) => setDateRange(startDate, date)}
+              onChange={setDateRange}
             />
           </div>
 

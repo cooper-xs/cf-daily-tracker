@@ -1,10 +1,17 @@
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface DateRangePickerProps {
   startDate: string;
   endDate: string;
-  onStartDateChange: (date: string) => void;
-  onEndDateChange: (date: string) => void;
+  onChange: (startDate: string, endDate: string) => void;
+}
+
+// 获取 UTC+8 的当前日期字符串
+function getUTC8DateString(): string {
+  const now = new Date();
+  const utc8Time = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  return utc8Time.toISOString().split('T')[0];
 }
 
 /**
@@ -14,10 +21,10 @@ interface DateRangePickerProps {
 export function DateRangePicker({
   startDate,
   endDate,
-  onStartDateChange,
-  onEndDateChange,
+  onChange,
 }: DateRangePickerProps) {
   const { t } = useTranslation();
+  const today = getUTC8DateString();
 
   // 快捷选项：今天、昨天、近7天、近30天
   const shortcuts = [
@@ -27,38 +34,61 @@ export function DateRangePicker({
     { label: t('date.last30Days'), days: 30 },
   ];
 
-  // 获取 UTC+8 的当前日期
-  const getUTC8Date = () => {
-    const now = new Date();
-    return new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  // 判断当前选中哪个快捷选项
+  const getActiveShortcut = (): number | null => {
+    if (startDate === endDate) {
+      if (startDate === today) return 0;
+      const yesterday = new Date(new Date().getTime() + 8 * 60 * 60 * 1000 - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      if (startDate === yesterday) return 1;
+    }
+    // 近7天
+    const sevenDaysAgo = new Date(new Date().getTime() + 8 * 60 * 60 * 1000 - 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    if (startDate === sevenDaysAgo && endDate === today) return 7;
+    // 近30天
+    const thirtyDaysAgo = new Date(new Date().getTime() + 8 * 60 * 60 * 1000 - 29 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    if (startDate === thirtyDaysAgo && endDate === today) return 30;
+    return null;
   };
 
-  // 将 UTC+8 日期转为 YYYY-MM-DD 字符串
-  const toDateString = (date: Date) => {
-    return date.toISOString().split('T')[0];
-  };
+  const activeShortcut = getActiveShortcut();
 
-  const handleShortcut = (days: number) => {
-    const utc8Now = getUTC8Date();
+  const handleShortcut = useCallback((days: number) => {
+    const utc8Now = new Date(new Date().getTime() + 8 * 60 * 60 * 1000);
+    const endStr = utc8Now.toISOString().split('T')[0];
     
     if (days === 0) {
       // 今天
-      const dateStr = toDateString(utc8Now);
-      onStartDateChange(dateStr);
-      onEndDateChange(dateStr);
+      onChange(endStr, endStr);
     } else if (days === 1) {
       // 昨天
       const yesterday = new Date(utc8Now.getTime() - 24 * 60 * 60 * 1000);
-      const dateStr = toDateString(yesterday);
-      onStartDateChange(dateStr);
-      onEndDateChange(dateStr);
+      const startStr = yesterday.toISOString().split('T')[0];
+      onChange(startStr, startStr);
     } else {
       // 近 N 天
       const start = new Date(utc8Now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
-      const startStr = toDateString(start);
-      const endStr = toDateString(utc8Now);
-      onStartDateChange(startStr);
-      onEndDateChange(endStr);
+      const startStr = start.toISOString().split('T')[0];
+      onChange(startStr, endStr);
+    }
+  }, [onChange]);
+
+  const handleStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newStart = e.target.value;
+    // 确保开始日期不超过结束日期
+    if (newStart > endDate) {
+      onChange(newStart, newStart);
+    } else {
+      onChange(newStart, endDate);
+    }
+  };
+
+  const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEnd = e.target.value;
+    // 确保结束日期不早于开始日期
+    if (newEnd < startDate) {
+      onChange(newEnd, newEnd);
+    } else {
+      onChange(startDate, newEnd);
     }
   };
 
@@ -66,20 +96,27 @@ export function DateRangePicker({
     <div className="space-y-3">
       {/* 快捷选项 */}
       <div className="flex flex-wrap gap-2">
-        {shortcuts.map((shortcut) => (
-          <button
-            key={shortcut.days}
-            type="button"
-            onClick={() => handleShortcut(shortcut.days)}
-            className="px-3 py-1.5 text-sm rounded-full border border-gray-300 dark:border-gray-600
-                       bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300
-                       hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700
-                       hover:text-blue-600 dark:hover:text-blue-400
-                       transition-all active:scale-95"
-          >
-            {shortcut.label}
-          </button>
-        ))}
+        {shortcuts.map((shortcut) => {
+          const isActive = 
+            (shortcut.days === 0 && activeShortcut === 0) ||
+            (shortcut.days === 1 && activeShortcut === 1) ||
+            (shortcut.days === 7 && activeShortcut === 7) ||
+            (shortcut.days === 30 && activeShortcut === 30);
+          
+          return (
+            <button
+              key={shortcut.days}
+              type="button"
+              onClick={() => handleShortcut(shortcut.days)}
+              className={`px-3 py-1.5 text-sm rounded-full border transition-all active:scale-95
+                         ${isActive 
+                           ? 'bg-blue-500 border-blue-500 text-white shadow-sm' 
+                           : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400'}`}
+            >
+              {shortcut.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* 日期选择 - 美化版 */}
@@ -92,8 +129,8 @@ export function DateRangePicker({
             <input
               type="date"
               value={startDate}
-              onChange={(e) => onStartDateChange(e.target.value)}
-              max={endDate}
+              onChange={handleStartChange}
+              max={today}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700
                          bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100
                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400
@@ -117,8 +154,8 @@ export function DateRangePicker({
             <input
               type="date"
               value={endDate}
-              onChange={(e) => onEndDateChange(e.target.value)}
-              min={startDate}
+              onChange={handleEndChange}
+              max={today}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700
                          bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100
                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400

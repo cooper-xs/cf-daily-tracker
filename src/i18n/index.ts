@@ -47,8 +47,8 @@ const zhCN = {
     endDate: '结束日期',
     today: '今天',
     yesterday: '昨天',
-    last7Days: '近7天',
-    last30Days: '近30天',
+    last7Days: '最近一周',
+    last30Days: '最近30天',
     dateRange: '日期范围',
   },
   errors: {
