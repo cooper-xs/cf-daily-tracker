@@ -37,8 +37,8 @@ export function useUserQuery() {
     setState(prev => ({ ...prev, startDate, endDate }));
   }, []);
 
-  const queryUsers = useCallback(async (input: string) => {
-    const handles = parseHandles(input);
+  // 通用的查询逻辑
+  const performQuery = useCallback(async (handles: string[]) => {
     if (handles.length === 0) {
       setState(prev => ({ ...prev, error: '请输入至少一个用户名' }));
       return;
@@ -88,6 +88,17 @@ export function useUserQuery() {
     }
   }, [state.startDate, state.endDate]);
 
+  // 通过字符串查询（兼容旧用法）
+  const queryUsers = useCallback(async (input: string) => {
+    const handles = parseHandles(input);
+    await performQuery(handles);
+  }, [performQuery]);
+
+  // 通过 handles 数组查询（供 TagInput 使用）
+  const queryUsersByHandles = useCallback(async (handles: string[]) => {
+    await performQuery(handles);
+  }, [performQuery]);
+
   const clearError = useCallback(() => {
     setState(prev => ({ ...prev, error: null }));
   }, []);
@@ -96,6 +107,7 @@ export function useUserQuery() {
     ...state,
     setDateRange,
     queryUsers,
+    queryUsersByHandles,
     clearError,
   };
 }
