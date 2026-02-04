@@ -1,32 +1,32 @@
 import { useTranslation } from 'react-i18next';
 import type { CFSubmission } from '../types';
-import { VerdictMap, getProblemUrl, getSubmissionUrl, formatTime, getDifficultyColor } from '../utils';
+import { VerdictMap } from '../types';
+import { getSubmissionUrl, formatTime, getDifficultyColor } from '../utils';
 
 interface SubmissionListProps {
-  handle: string;
   submissions: CFSubmission[];
 }
 
 /**
  * 提交记录列表组件
  */
-export function SubmissionList({ handle, submissions }: SubmissionListProps) {
+export function SubmissionList({ submissions }: SubmissionListProps) {
   const { t } = useTranslation();
 
   if (submissions.length === 0) {
     return (
-      &lt;div className="p-4 text-center text-gray-500 dark:text-gray-400"&gt;
+      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
         {t('submission.noSubmissions')}
-      &lt;/div&gt;
+      </div>
     );
   }
 
   return (
-    &lt;div className="space-y-2"&gt;
+    <div className="space-y-2">
       {submissions.map((sub) => (
-        &lt;SubmissionItem key={sub.id} submission={sub} /&gt;
+        <SubmissionItem key={sub.id} submission={sub} />
       ))}
-    &lt;/div&gt;
+    </div>
   );
 }
 
@@ -42,16 +42,15 @@ function SubmissionItem({ submission }: { submission: CFSubmission }) {
   const difficultyColor = getDifficultyColor(problem.rating);
 
   return (
-    &lt;a
+    <a
       href={getSubmissionUrl(contestId, id)}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700
                  bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750
                  transition-colors group"
-    &gt;
-      {/* 状态指示器 */}
-      &lt;div
+    >
+      <div
         className={`w-3 h-3 rounded-full shrink-0 ${
           isAccepted
             ? 'bg-green-500'
@@ -59,37 +58,36 @@ function SubmissionItem({ submission }: { submission: CFSubmission }) {
             ? 'bg-yellow-500 animate-pulse'
             : 'bg-red-500'
         }`}
-      /&gt;
+      />
 
-      {/* 题目信息 */}
-      &lt;div className="flex-1 min-w-0"&gt;
-        &lt;div className="flex items-center gap-2"&gt;
-          &lt;span className="font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"&gt;
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {problem.contestId && `${problem.contestId}${problem.index} - `}
             {problem.name}
-          &lt;/span&gt;
+          </span>
           {problem.rating && (
-            &lt;span
+            <span
               className="px-1.5 py-0.5 text-xs rounded font-medium shrink-0"
               style={{
                 backgroundColor: `${difficultyColor}20`,
                 color: difficultyColor,
               }}
-            &gt;
+            >
               {problem.rating}
-            &lt;/span&gt;
+            </span>
           )}
-        &lt;/div&gt;
-        &lt;div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400"&gt;
-          &lt;span className={isAccepted ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}&gt;
+        </div>
+        <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <span className={isAccepted ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
             {t(`submission.${verdictKey}`)}
-          &lt;/span&gt;
-          &lt;span&gt;•&lt;/span&gt;
-          &lt;span&gt;{formatTime(creationTimeSeconds)}&lt;/span&gt;
-          &lt;span&gt;•&lt;/span&gt;
-          &lt;span className="truncate"&gt;{submission.programmingLanguage}&lt;/span&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/a&gt;
+          </span>
+          <span>•</span>
+          <span>{formatTime(creationTimeSeconds)}</span>
+          <span>•</span>
+          <span className="truncate">{submission.programmingLanguage}</span>
+        </div>
+      </div>
+    </a>
   );
 }

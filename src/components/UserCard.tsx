@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { CFUser } from '../types';
-import { RankColors, getUserUrl } from '../utils';
+import { getUserUrl } from '../utils';
+import { RankColors } from '../types';
 
 interface UserCardProps {
   user: CFUser;
@@ -15,47 +16,47 @@ export function UserCard({ user, submissionCount }: UserCardProps) {
   const rankColor = RankColors[user.rank] || '#808080';
 
   return (
-    &lt;div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 
-                    bg-white dark:bg-gray-800 transition-colors"&gt;
-      &lt;div className="flex items-center gap-4"&gt;
-        &lt;img
+    <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 
+                    bg-white dark:bg-gray-800 transition-colors">
+      <div className="flex items-center gap-4">
+        <img
           src={user.avatar}
           alt={user.handle}
           className="w-12 h-12 rounded-full border-2"
           style={{ borderColor: rankColor }}
-        /&gt;
-        &lt;div className="flex-1 min-w-0"&gt;
-          &lt;a
+        />
+        <div className="flex-1 min-w-0">
+          <a
             href={getUserUrl(user.handle)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-lg font-semibold truncate hover:underline"
             style={{ color: rankColor }}
-          &gt;
+          >
             {user.handle}
-          &lt;/a&gt;
-          &lt;p className="text-sm text-gray-500 dark:text-gray-400 capitalize"&gt;
+          </a>
+          <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
             {user.rank.replace(/-/g, ' ')}
-          &lt;/p&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
+          </p>
+        </div>
+      </div>
 
-      &lt;div className="mt-3 grid grid-cols-3 gap-2 text-center"&gt;
-        &lt;div className="p-2 rounded bg-gray-50 dark:bg-gray-700"&gt;
-          &lt;p className="text-xs text-gray-500 dark:text-gray-400"&gt;{t('user.rating')}&lt;/p&gt;
-          &lt;p className="text-lg font-bold" style={{ color: rankColor }}&gt;{user.rating}&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div className="p-2 rounded bg-gray-50 dark:bg-gray-700"&gt;
-          &lt;p className="text-xs text-gray-500 dark:text-gray-400"&gt;{t('user.maxRating')}&lt;/p&gt;
-          &lt;p className="text-lg font-bold text-gray-700 dark:text-gray-300"&gt;{user.maxRating}&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div className="p-2 rounded bg-gray-50 dark:bg-gray-700"&gt;
-          &lt;p className="text-xs text-gray-500 dark:text-gray-400"&gt;{t('common.today')}&lt;/p&gt;
-          &lt;p className={`text-lg font-bold ${submissionCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}&gt;
+      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+        <div className="p-2 rounded bg-gray-50 dark:bg-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('user.rating')}</p>
+          <p className="text-lg font-bold" style={{ color: rankColor }}>{user.rating}</p>
+        </div>
+        <div className="p-2 rounded bg-gray-50 dark:bg-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('user.maxRating')}</p>
+          <p className="text-lg font-bold text-gray-700 dark:text-gray-300">{user.maxRating}</p>
+        </div>
+        <div className="p-2 rounded bg-gray-50 dark:bg-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('common.today')}</p>
+          <p className={`text-lg font-bold ${submissionCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}>
             {submissionCount}
-          &lt;/p&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

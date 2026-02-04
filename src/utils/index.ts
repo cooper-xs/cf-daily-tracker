@@ -3,6 +3,18 @@
  */
 
 /**
+ * 格式化时间戳为本地时间字符串
+ */
+export function formatTime(seconds: number): string {
+  const date = new Date(seconds * 1000);
+  return date.toLocaleString('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
+
+/**
  * 解析用户输入，提取用户名列表
  * @param input 用户输入（逗号、空格或换行分隔）
  * @param maxCount 最大数量限制

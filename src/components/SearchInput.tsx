@@ -23,8 +23,8 @@ export function SearchInput({ onSearch, loading }: SearchInputProps) {
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex flex-col gap-3">
-        &lt;div className="relative"&gt;
-          &lt;input
+        <div className="relative">
+          <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -35,22 +35,22 @@ export function SearchInput({ onSearch, loading }: SearchInputProps) {
                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                        disabled:opacity-50 disabled:cursor-not-allowed
                        transition-colors"
-          /&gt;
-          &lt;button
+          />
+          <button
             type="submit"
             disabled={loading || !input.trim()}
             className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-1.5
                        bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400
                        text-white font-medium rounded-md
                        transition-colors disabled:cursor-not-allowed"
-          &gt;
+          >
             {loading ? t('common.loading') : t('common.search')}
-          &lt;/button&gt;
-        &lt;/div&gt;
-        &lt;p className="text-sm text-gray-500 dark:text-gray-400"&gt;
+          </button>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {t('user.inputHint')}
-        &lt;/p&gt;
-      &lt;/div&gt;
-    &lt;/form&gt;
+        </p>
+      </div>
+    </form>
   );
 }

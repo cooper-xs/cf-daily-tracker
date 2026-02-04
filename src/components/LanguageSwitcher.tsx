@@ -12,9 +12,9 @@ export function LanguageSwitcher() {
   ];
 
   return (
-    &lt;div className="flex gap-1"&gt;
+    <div className="flex gap-1">
       {languages.map((lang) => (
-        &lt;button
+        <button
           key={lang.code}
           onClick={() => i18n.changeLanguage(lang.code)}
           className={`px-2 py-1 text-sm rounded transition-colors ${
@@ -22,10 +22,10 @@ export function LanguageSwitcher() {
               ? 'bg-blue-500 text-white'
               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
           }`}
-        &gt;
+        >
           {lang.label}
-        &lt;/button&gt;
+        </button>
       ))}
-    &lt;/div&gt;
+    </div>
   );
 }
