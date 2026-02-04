@@ -8,8 +8,10 @@ interface QueryState {
   error: string | null;
   users: CFUser[];
   submissions: Map<string, CFSubmission[]>;
-  startDate: string;
-  endDate: string;
+  startDate: string;  // 当前选择的开始日期
+  endDate: string;    // 当前选择的结束日期
+  queryStartDate: string | null;  // 查询时的开始日期（用于显示）
+  queryEndDate: string | null;    // 查询时的结束日期（用于显示）
 }
 
 // 获取今日日期字符串 (YYYY-MM-DD)
@@ -31,6 +33,8 @@ export function useUserQuery() {
     submissions: new Map(),
     startDate: getTodayString(),
     endDate: getTodayString(),
+    queryStartDate: null,
+    queryEndDate: null,
   });
 
   const setDateRange = useCallback((startDate: string, endDate: string) => {
@@ -43,6 +47,10 @@ export function useUserQuery() {
       setState(prev => ({ ...prev, error: '请输入至少一个用户名' }));
       return;
     }
+
+    // 记录查询时使用的日期
+    const queryStart = state.startDate;
+    const queryEnd = state.endDate;
 
     setState(prev => ({ ...prev, loading: true, error: null }));
 
@@ -61,12 +69,12 @@ export function useUserQuery() {
 
       // 获取指定日期范围内的提交记录
       let submissions: Map<string, CFSubmission[]>;
-      if (state.startDate === state.endDate && state.startDate === getTodayString()) {
+      if (queryStart === queryEnd && queryStart === getTodayString()) {
         // 如果是今天，使用今日查询函数（兼容旧逻辑）
         submissions = await getUsersTodaySubmissions(handles);
       } else {
         // 使用日期范围查询
-        submissions = await getUsersSubmissionsByDateRange(handles, state.startDate, state.endDate);
+        submissions = await getUsersSubmissionsByDateRange(handles, queryStart, queryEnd);
       }
       
       // 保存搜索历史
@@ -78,6 +86,8 @@ export function useUserQuery() {
         error: null,
         users,
         submissions,
+        queryStartDate: queryStart,
+        queryEndDate: queryEnd,
       }));
     } catch (error) {
       setState(prev => ({

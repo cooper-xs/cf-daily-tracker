@@ -9,7 +9,7 @@ import './i18n';
 function App() {
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
-  const { loading, error, users, submissions, startDate, endDate, setDateRange, queryUsersByHandles, clearError } = useUserQuery();
+  const { loading, error, users, submissions, startDate, endDate, queryStartDate, queryEndDate, setDateRange, queryUsersByHandles, clearError } = useUserQuery();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -77,8 +77,8 @@ function App() {
                   <UserCard
                     user={user}
                     submissionCount={submissions.get(user.handle)?.length || 0}
-                    startDate={startDate}
-                    endDate={endDate}
+                    startDate={queryStartDate || startDate}
+                    endDate={queryEndDate || endDate}
                   />
                 </div>
 
