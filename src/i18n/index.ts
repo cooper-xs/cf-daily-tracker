@@ -57,6 +57,11 @@ const zhCN = {
     rejected: '未通过',
     noResults: '该筛选条件下无结果',
   },
+  theme: {
+    light: '浅色',
+    dark: '深色',
+    system: '跟随系统',
+  },
   errors: {
     apiLimit: '请求过于频繁，请稍后再试',
     userNotFound: '用户不存在',
@@ -119,6 +124,11 @@ const enUS = {
     accepted: 'Accepted',
     rejected: 'Rejected',
     noResults: 'No results for this filter',
+  },
+  theme: {
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
   },
   errors: {
     apiLimit: 'Too many requests, please try again later',

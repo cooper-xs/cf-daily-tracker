@@ -156,3 +156,6 @@ export function useSystemTheme() {
 
   return isDark;
 }
+
+export { useTheme } from './useTheme';
+export type { ThemeMode } from './useTheme';

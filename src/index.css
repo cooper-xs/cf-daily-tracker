@@ -20,11 +20,9 @@
   --color-cf-legendary-grandmaster: #ff0000;
 }
 
-/* 暗色模式支持 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
+/* 暗色模式支持 - 通过 class 切换 */
+.dark {
+  color-scheme: dark;
 }
 
 /* 基础样式 */

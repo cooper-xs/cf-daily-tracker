@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { TagInput, UserCard, SubmissionList, LanguageSwitcher, ErrorMessage, DateRangePicker } from './components';
-import { useUserQuery } from './hooks';
+import { TagInput, UserCard, SubmissionList, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
+import { useUserQuery, useTheme } from './hooks';
 import './i18n';
 
 /**
@@ -8,6 +8,7 @@ import './i18n';
  */
 function App() {
   const { t } = useTranslation();
+  const { theme, setTheme } = useTheme();
   const { loading, error, users, submissions, startDate, endDate, setDateRange, queryUsersByHandles, clearError } = useUserQuery();
 
   return (
@@ -17,7 +18,10 @@ function App() {
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             {t('common.appName')}
           </h1>
-          <LanguageSwitcher />
+          <div className="flex items-center gap-3">
+            <ThemeSwitcher theme={theme} onChange={setTheme} />
+            <LanguageSwitcher />
+          </div>
         </div>
       </header>
 
