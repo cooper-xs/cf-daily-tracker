@@ -65,12 +65,18 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
 
   // 点击搜索
   const handleSearch = () => {
-    if (inputValue.trim()) {
-      addTag(inputValue);
-    }
-    if (tags.length > 0 || inputValue.trim()) {
-      const allHandles = inputValue.trim() ? [...tags, inputValue.trim()] : tags;
-      onSearch(allHandles);
+    const trimmedInput = inputValue.trim();
+    if (trimmedInput) {
+      // 如果有输入值但还没添加到 tags，先添加
+      if (!tags.includes(trimmedInput)) {
+        setTags([...tags, trimmedInput]);
+      }
+      // 立即搜索（包含当前输入值）
+      onSearch([...tags, trimmedInput]);
+      setInputValue('');
+    } else if (tags.length > 0) {
+      // 只有标签时直接搜索
+      onSearch(tags);
     }
   };
 
