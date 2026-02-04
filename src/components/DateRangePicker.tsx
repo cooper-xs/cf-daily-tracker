@@ -168,10 +168,6 @@ export function DateRangePicker({
         </div>
       </div>
 
-      {/* 显示当前选择范围 */}
-      <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800/50 px-3 py-2 rounded-lg inline-block">
-        {startDate === endDate ? startDate : `${startDate} ~ ${endDate}`}
-      </div>
     </div>
   );
 }
