@@ -60,8 +60,10 @@ export function SubmissionList({ submissions }: SubmissionListProps) {
       {/* Rating 分布统计 */}
       <RatingDistribution 
         submissions={submissions} 
+        filteredCount={filteredSubmissions.length}
         onRatingRangeSelect={(min, max) => setRatingRange(min !== null ? { min, max } : null)}
         selectedRange={ratingRange}
+        resultFilter={resultFilter}
       />
 
       {/* Rating 筛选标签 */}

@@ -7,6 +7,7 @@ const zhCN = {
   common: {
     appName: '别让我逮到你',
     search: '查询',
+    results: '条结果',
     loading: '加载中...',
     error: '错误',
     retry: '重试',
@@ -80,6 +81,7 @@ const enUS = {
   common: {
     appName: "I'm watching you",
     search: 'Search',
+    results: 'results',
     loading: 'Loading...',
     error: 'Error',
     retry: 'Retry',
