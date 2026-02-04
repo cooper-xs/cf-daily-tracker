@@ -68,6 +68,7 @@ const zhCN = {
     distribution: '难度分布',
     difficulty: '难度',
     allLevels: '全部难度',
+    deduplicateHint: '已通过题目去重统计，共 {{count}} 道唯一题目',
   },
   theme: {
     light: '浅色',
@@ -148,6 +149,7 @@ const enUS = {
     distribution: 'Rating Distribution',
     difficulty: 'Difficulty',
     allLevels: 'All Levels',
+    deduplicateHint: 'Deduplicated solved problems, {{count}} unique',
   },
   theme: {
     light: 'Light',

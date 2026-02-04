@@ -25,9 +25,17 @@ const RATING_RANGES = [
 ];
 
 /**
+ * 获取题目的唯一标识
+ */
+function getProblemKey(sub: CFSubmission): string {
+  return `${sub.problem.contestId || 'unknown'}-${sub.problem.index}`;
+}
+
+/**
  * Rating 分布统计组件
  * 展示用户在不同 Rating 区间的做题情况
  * 支持按通过性筛选显示
+ * 通过的题目会去重统计
  */
 export function RatingDistribution({ 
   submissions, 
@@ -38,9 +46,11 @@ export function RatingDistribution({
 }: RatingDistributionProps) {
   const { t } = useTranslation();
 
-  // 统计每个区间的通过情况
-  const distribution = useMemo(() => {
-    return RATING_RANGES.map(range => {
+  // 统计每个区间的通过情况（通过的题目去重）
+  const { distribution, totalUniqueSolved } = useMemo(() => {
+    let totalUnique = 0;
+    
+    const dist = RATING_RANGES.map(range => {
       // 该区间所有提交
       const rangeSubs = submissions.filter(sub => {
         const rating = sub.problem.rating;
@@ -48,18 +58,28 @@ export function RatingDistribution({
         return rating >= range.min && rating <= range.max;
       });
 
-      // 已通过和未通过
-      const solved = rangeSubs.filter(sub => sub.verdict === 'OK');
+      // 已通过和未通过（去重前）
+      const allSolved = rangeSubs.filter(sub => sub.verdict === 'OK');
       const failed = rangeSubs.filter(sub => sub.verdict !== 'OK');
-      const attempted = rangeSubs.length;
+      
+      // 通过的题目去重：每个题目只算一次
+      const uniqueSolvedKeys = new Set<string>();
+      allSolved.forEach(sub => {
+        uniqueSolvedKeys.add(getProblemKey(sub));
+      });
+      const uniqueSolved = uniqueSolvedKeys.size;
+      totalUnique += uniqueSolved;
 
       return {
         ...range,
-        solved: solved.length,
+        solved: uniqueSolved, // 去重后的通过数
+        solvedCount: allSolved.length, // 原始通过提交数（用于参考）
         failed: failed.length,
-        attempted,
+        attempted: rangeSubs.length,
       };
     }).filter(d => d.attempted > 0); // 只显示有做题记录的区间
+
+    return { distribution: dist, totalUniqueSolved: totalUnique };
   }, [submissions]);
 
   if (distribution.length === 0) {
@@ -76,7 +96,7 @@ export function RatingDistribution({
 
   return (
     <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2">
         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {t('rating.distribution')}
         </h4>
@@ -92,6 +112,12 @@ export function RatingDistribution({
           )}
         </span>
       </div>
+      
+      {/* 去重提示 */}
+      <div className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+        💡 {t('rating.deduplicateHint', { count: totalUniqueSolved })}
+      </div>
+      
       <div className="space-y-2">
         {distribution.map((item) => {
           const isSelected = selectedRange?.min === item.min && selectedRange?.max === item.max;
