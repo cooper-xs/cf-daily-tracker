@@ -1,109 +1,109 @@
-# Changelog
+# 更新日志
 
-All notable changes to this project will be documented in this file.
+本项目所有重要变更都将记录在此文件中。
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
+并遵循 [语义化版本](https://semver.org/lang/zh-CN/) 规范。
 
 ---
 
-## [Unreleased]
+## [未发布]
 
-### Planned Features
+### 计划功能
 
-- **Multi-user PK Mode**: Compare multiple users side-by-side with head-to-head statistics
-- **Leaderboard View**: Ranking system for competing users
-- **Activity Heatmap**: Visual timeline showing submission frequency patterns
-- **Problem Tag Analysis**: Breakdown of solved problems by category/tags
-- **Streak Tracking**: Consecutive days of problem solving
-- **Export Functionality**: Export statistics to CSV/JSON
+- **多人 PK 模式**：并排对比多个用户的数据
+- **排行榜视图**：用户排名系统
+- **活跃热力图**：可视化展示提交频率时间线
+- **题目标签分析**：按分类/标签统计解题情况
+- **连续打卡追踪**：记录连续刷题天数
+- **数据导出功能**：支持 CSV/JSON 格式导出统计
 
 ---
 
 ## [1.0.0] - 2026-02-05
 
-### Added
+### 新增
 
-- **Multi-user Query with Tabs**: Support querying multiple users with tab-based navigation to switch between users
-- **Sticky Header**: User info and filter panels stick to top when scrolling down
-- **Collapsible Filter Panel**: Filter section can be expanded/collapsed with "Adjust Filters" button
-- **Back to Top Button**: Floating button appears after scrolling down 300px
-- **Mobile Responsive**: Website title now visible on mobile devices with adjusted font size
-- **Footer Enhancements**: 
-  - GitHub link button with icon
-  - Improved author attribution with gradient styled @TARS 🤖
-  - Better visual hierarchy with cards and spacing
-- **Progress Bar Optimization**: Progress bars dynamically adjust max value based on selected filter (all/accepted/rejected)
-- **User Card Improvements**: Date labels dynamically display based on selected time range
+- **多人 Tab 切换查询**：支持查询多个用户，通过 Tab 切换查看不同用户
+- **吸顶面板**：滚动时用户信息和筛选面板固定在顶部
+- **可折叠筛选面板**：支持展开/收起，点击"调整筛选"按钮展开
+- **回到顶部按钮**：滚动超过 300px 后显示悬浮按钮
+- **移动端适配**：移动端现在显示网站标题，字体大小自适应
+- **页脚优化**：
+  - 添加 GitHub 链接按钮（带图标）
+  - 优化作者署名展示，@TARS 使用渐变色
+  - 更好的视觉层次和间距
+- **进度条优化**：根据筛选条件（全部/通过/未通过）动态调整最大值
+- **用户卡片优化**：日期标签根据选择的时间范围动态显示
 
-### Changed
+### 变更
 
-- Sticky header now uses overlay mode instead of placeholder to prevent content jumping
-- Compact user info panel in sticky header (non-expandable)
-- Filter panel in sticky header defaults to collapsed state
+- 吸顶面板改为覆盖模式，避免内容跳动
+- 吸顶时的用户信息精简展示（不可展开）
+- 吸顶时的筛选面板默认收起
 
 ---
 
 ## [0.9.0] - 2026-02-05
 
-### Added
+### 新增
 
-- **Rating Distribution Visualization**: Show problem difficulty distribution with stacked progress bars
-- **Problem Deduplication**: Count unique solved problems per rating range (each problem only counted once)
-- **Filter by Rating Range**: Click on rating distribution bars to filter submissions by difficulty
-- **Result Filter Tabs**: Quick filter by All/Accepted/Rejected with count badges
-- **Theme Toggle**: Light/Dark/System theme switcher in header
-- **Internationalization**: Full Chinese (zh-CN) and English (en) language support
+- **难度分布可视化**：使用堆叠进度条展示各 Rating 区间的做题情况
+- **通过题目去重统计**：每个题目只计算一次通过
+- **Rating 区间筛选**：点击难度分布条筛选对应难度的题目
+- **结果筛选标签**：快速筛选 全部/通过/未通过，带数量徽章
+- **主题切换**：浅色/深色/跟随系统三种模式
+- **国际化支持**：完整的中文（zh-CN）和英文（en）语言支持
 
-### Changed
+### 变更
 
-- Progress bars in "all" mode now use difficulty-specific colors
-- Improved submission list layout with difficulty badges and verdict colors
+- "全部"模式下的进度条使用对应难度颜色
+- 提交记录列表优化，增加难度徽章和结果颜色区分
 
 ---
 
 ## [0.5.0] - 2026-02-05
 
-### Added
+### 新增
 
-- **Date Range Selection**: Custom date range picker with preset shortcuts (Today, Yesterday, Last 7/30 Days)
-- **Tag-based User Input**: Add/remove multiple users with visual tags
-- **Keyboard Shortcuts**: 
-  - Enter: Add tag
-  - Shift+Enter: Execute search
-  - Backspace: Delete last tag
-- **Submission Filtering**: Filter by submission result (Accepted/Rejected)
-- **Footer**: Basic footer with Codeforces data attribution
+- **日期范围选择**：自定义日期范围，支持快捷选项（今天/昨天/最近7天/最近30天）
+- **标签式用户输入**：可视化标签添加/删除多个用户
+- **键盘快捷键**：
+  - 回车：添加标签
+  - Shift+回车：执行查询
+  - 退格：删除最后一个标签
+- **提交结果筛选**：按通过/未通过筛选提交记录
+- **页脚**：基础页脚，显示 Codeforces 数据来源
 
-### Changed
+### 变更
 
-- Website renamed to "别让我逮到你" (I'm watching you)
-- Improved date picker UI with visual selection indicators
+- 网站更名为"别让我逮到你"（I'm watching you）
+- 日期选择器 UI 优化，增加选中状态指示
 
 ---
 
 ## [0.1.0] - 2026-02-05
 
-### Added
+### 新增
 
-- Initial project setup with React + TypeScript + Vite + Tailwind CSS
-- Basic Codeforces API integration
-- User query by handle with avatar and rating display
-- Submission list with problem name, verdict, time, and language
-- Dark mode support based on system preference
+- 项目初始化：React + TypeScript + Vite + Tailwind CSS
+- Codeforces API 基础集成
+- 用户查询：显示头像和 Rating
+- 提交记录列表：展示题目名称、结果、时间和语言
+- 深色模式：根据系统偏好自动切换
 
 ---
 
-## Versioning Policy
+## 版本规范
 
-- **MAJOR**: Breaking changes or major feature additions
-- **MINOR**: New features, enhancements (backward compatible)
-- **PATCH**: Bug fixes, minor improvements
+- **主版本号**：破坏性变更或重大功能更新
+- **次版本号**：新增功能、功能增强（向后兼容）
+- **修订号**：Bug 修复、小幅优化
 
-## Release Process
+## 发布流程
 
-1. Update `CHANGELOG.md` with new version and changes
-2. Update version in `package.json`
-3. Create git tag: `git tag -a v1.0.0 -m "Release version 1.0.0"`
-4. Push tag: `git push origin v1.0.0`
-5. Deploy: `vercel --prod --yes`
+1. 更新 `CHANGELOG.md` 记录新版本变更
+2. 更新 `package.json` 中的版本号
+3. 创建 git 标签：`git tag -a v1.0.0 -m "Release version 1.0.0"`
+4. 推送标签：`git push origin v1.0.0`
+5. 部署：`vercel --prod --yes`

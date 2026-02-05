@@ -268,7 +268,7 @@ function App() {
   const activeSubmissions = activeUser ? (submissions.get(activeUser.handle) || []) : [];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex flex-col">
       {/* 固定顶部导航 */}
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -288,7 +288,7 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-4xl mx-auto px-4 py-6 flex-1 w-full">
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {t('user.title')}
