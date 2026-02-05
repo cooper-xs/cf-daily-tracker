@@ -236,8 +236,8 @@ function App() {
   
   // 当前选中的用户索引
   const [activeUserIndex, setActiveUserIndex] = useState(0);
-  // 筛选面板是否展开
-  const [isFilterPanelExpanded, setIsFilterPanelExpanded] = useState(true);
+  // 筛选面板是否展开（默认收起）
+  const [isFilterPanelExpanded, setIsFilterPanelExpanded] = useState(false);
   // 是否显示固定头部
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   
@@ -248,7 +248,7 @@ function App() {
   // 当用户列表变化时，重置选中索引和筛选
   useEffect(() => {
     setActiveUserIndex(0);
-    setIsFilterPanelExpanded(true);
+    setIsFilterPanelExpanded(false);
     setResultFilter('all');
     setRatingRange(null);
   }, [users.map(u => u.handle).join(',')]);
