@@ -24,19 +24,19 @@ export function useRecentUsers() {
     }
   }, []);
 
-  // 保存到 localStorage
-  const saveToStorage = useCallback((users: string[]) => {
+  // 同步到 localStorage
+  useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(recentUsers));
     } catch {
       // 忽略存储错误
     }
-  }, []);
+  }, [recentUsers]);
 
   /**
    * 添加用户到最近使用列表
    * - 已存在的会移到最前面
-   * - 最多保留10个
+   * - 最多保留20个
    */
   const addRecentUser = useCallback((handle: string) => {
     const trimmed = handle.trim();
@@ -46,11 +46,9 @@ export function useRecentUsers() {
       // 移除已存在的（避免重复）
       const filtered = prev.filter((u) => u.toLowerCase() !== trimmed.toLowerCase());
       // 添加到最前面
-      const updated = [trimmed, ...filtered].slice(0, MAX_RECENT_USERS);
-      saveToStorage(updated);
-      return updated;
+      return [trimmed, ...filtered].slice(0, MAX_RECENT_USERS);
     });
-  }, [saveToStorage]);
+  }, []);
 
   /**
    * 批量添加用户
@@ -64,30 +62,25 @@ export function useRecentUsers() {
       const lowerNew = validHandles.map((h) => h.toLowerCase());
       const filtered = prev.filter((u) => !lowerNew.includes(u.toLowerCase()));
       // 新添加的放前面，保持原有顺序
-      const updated = [...validHandles, ...filtered].slice(0, MAX_RECENT_USERS);
-      saveToStorage(updated);
-      return updated;
+      return [...validHandles, ...filtered].slice(0, MAX_RECENT_USERS);
     });
-  }, [saveToStorage]);
+  }, []);
 
   /**
    * 移除某个历史记录
    */
   const removeRecentUser = useCallback((handle: string) => {
     setRecentUsers((prev) => {
-      const updated = prev.filter((u) => u.toLowerCase() !== handle.toLowerCase());
-      saveToStorage(updated);
-      return updated;
+      return prev.filter((u) => u.toLowerCase() !== handle.toLowerCase());
     });
-  }, [saveToStorage]);
+  }, []);
 
   /**
    * 清空所有历史记录
    */
   const clearRecentUsers = useCallback(() => {
     setRecentUsers([]);
-    saveToStorage([]);
-  }, [saveToStorage]);
+  }, []);
 
   return {
     recentUsers,

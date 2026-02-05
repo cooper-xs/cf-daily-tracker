@@ -63,6 +63,14 @@ export function TagInput({
     setTags(tags.filter((_, i) => i !== index));
   };
 
+  // 保存搜索历史并执行搜索
+  const saveAndSearch = (handles: string[]) => {
+    onSearch(handles);
+    // 记录到最近使用
+    handles.forEach(handle => onAddRecentUser?.(handle));
+    setShowRecent(false);
+  };
+
   // 处理键盘事件
   // 回车：添加标签
   // Shift+回车：执行搜索
@@ -78,7 +86,7 @@ export function TagInput({
           addTag(inputValue);
         } else if (tags.length > 0) {
           // 输入框为空但有标签时，直接搜索
-          onSearch(tags);
+          saveAndSearch(tags);
         }
       }
     } else if (e.key === 'Backspace' && !inputValue && tags.length > 0) {
@@ -113,17 +121,12 @@ export function TagInput({
       }
       // 立即搜索（包含当前输入值）
       const allHandles = [...tags, trimmedInput];
-      onSearch(allHandles);
-      // 记录到最近使用
-      allHandles.forEach(handle => onAddRecentUser?.(handle));
+      saveAndSearch(allHandles);
       setInputValue('');
     } else if (tags.length > 0) {
       // 只有标签时直接搜索
-      onSearch(tags);
-      // 记录到最近使用
-      tags.forEach(handle => onAddRecentUser?.(handle));
+      saveAndSearch(tags);
     }
-    setShowRecent(false);
   };
 
   // 清空所有标签
