@@ -10,13 +10,10 @@ interface TagInputProps {
   onClearRecentUsers?: () => void;
 }
 
-const DRAFT_KEY = 'cf_tracker_draft_input';
-
 /**
  * 标签式用户输入组件
  * 支持回车生成标签，可批量输入多个用户名
  * 支持最近使用用户快速添加
- * 支持草稿自动保存（刷新不丢失）
  */
 export function TagInput({ 
   onSearch, 
@@ -33,33 +30,6 @@ export function TagInput({
   const [showRecent, setShowRecent] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // 从 localStorage 恢复草稿
-  useEffect(() => {
-    try {
-      const draft = localStorage.getItem(DRAFT_KEY);
-      if (draft) {
-        const parsed = JSON.parse(draft);
-        if (parsed.tags && Array.isArray(parsed.tags)) {
-          setTags(parsed.tags);
-        }
-        if (parsed.inputValue) {
-          setInputValue(parsed.inputValue);
-        }
-      }
-    } catch {
-      // 忽略解析错误
-    }
-  }, []);
-
-  // 保存草稿到 localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ tags, inputValue }));
-    } catch {
-      // 忽略存储错误
-    }
-  }, [tags, inputValue]);
 
   // 点击外部关闭最近使用面板
   useEffect(() => {
@@ -98,14 +68,8 @@ export function TagInput({
     onSearch(handles);
     // 记录到最近使用
     handles.forEach(handle => onAddRecentUser?.(handle));
-    // 清除草稿
     setTags([]);
     setInputValue('');
-    try {
-      localStorage.removeItem(DRAFT_KEY);
-    } catch {
-      // 忽略错误
-    }
     setShowRecent(false);
   };
 

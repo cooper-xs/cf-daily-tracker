@@ -128,8 +128,9 @@ export function useUserQuery() {
  */
 export function useSearchHistory() {
   const [history, setHistory] = useState<string[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // 从本地存储加载
+  // 从本地存储加载（只在组件挂载时执行一次）
   useEffect(() => {
     try {
       const data = localStorage.getItem('cf_tracker_search_history');
@@ -142,16 +143,18 @@ export function useSearchHistory() {
     } catch {
       // 忽略错误
     }
+    setIsLoaded(true);
   }, []);
 
-  // 同步到本地存储
+  // 同步到本地存储（只在明确修改后写入，避免初始化时覆盖）
   useEffect(() => {
+    if (!isLoaded) return; // 加载完成前不写入
     try {
       localStorage.setItem('cf_tracker_search_history', JSON.stringify(history));
     } catch {
       // 忽略存储错误
     }
-  }, [history]);
+  }, [history, isLoaded]);
 
   /**
    * 添加用户到历史列表（移到最前面）
