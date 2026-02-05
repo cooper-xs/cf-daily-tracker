@@ -96,63 +96,27 @@ function UserTabs({ users, activeIndex, onSelect }: UserTabsProps) {
 }
 
 /**
- * 可折叠的用户信息面板
+ * 精简用户信息面板（吸顶时使用，不可展开）
  */
-interface CollapsibleUserPanelProps {
+interface CompactUserPanelProps {
   user: CFUser;
   submissionCount: number;
-  startDate: string;
-  endDate: string;
-  isExpanded: boolean;
-  onToggle: () => void;
 }
 
-function CollapsibleUserPanel({ user, submissionCount, startDate, endDate, isExpanded, onToggle }: CollapsibleUserPanelProps) {
+function CompactUserPanel({ user, submissionCount }: CompactUserPanelProps) {
   return (
     <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-      {/* 折叠状态：精简信息 */}
-      <div 
-        className={`flex items-center justify-between px-4 transition-all duration-300 ${isExpanded ? 'py-2' : 'py-3'}`}
-      >
-        <div className="flex items-center gap-3">
-          <img src={user.avatar} alt={user.handle} className="w-10 h-10 rounded-full" />
-          <div>
-            <div className="font-semibold text-gray-900 dark:text-white">{user.handle}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-              <span className="font-medium" style={{ color: getRatingColor(user.rating) }}>
-                {user.rank} · {user.rating}
-              </span>
-              <span>·</span>
-              <span>{submissionCount} submissions</span>
-            </div>
+      <div className="flex items-center gap-3 px-4 py-3">
+        <img src={user.avatar} alt={user.handle} className="w-10 h-10 rounded-full" />
+        <div>
+          <div className="font-semibold text-gray-900 dark:text-white">{user.handle}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+            <span className="font-medium" style={{ color: getRatingColor(user.rating) }}>
+              {user.rank} · {user.rating}
+            </span>
+            <span>·</span>
+            <span>{submissionCount} submissions</span>
           </div>
-        </div>
-        
-        <button
-          onClick={onToggle}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          aria-label={isExpanded ? 'Collapse' : 'Expand'}
-        >
-          <svg 
-            className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-      </div>
-      
-      {/* 展开状态：完整信息 */}
-      <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="px-4 pb-4">
-          <UserCard
-            user={user}
-            submissionCount={submissionCount}
-            startDate={startDate}
-            endDate={endDate}
-          />
         </div>
       </div>
     </div>
@@ -272,8 +236,6 @@ function App() {
   
   // 当前选中的用户索引
   const [activeUserIndex, setActiveUserIndex] = useState(0);
-  // 用户信息面板是否展开
-  const [isUserPanelExpanded, setIsUserPanelExpanded] = useState(true);
   // 筛选面板是否展开
   const [isFilterPanelExpanded, setIsFilterPanelExpanded] = useState(true);
   // 是否显示固定头部
@@ -286,7 +248,6 @@ function App() {
   // 当用户列表变化时，重置选中索引和筛选
   useEffect(() => {
     setActiveUserIndex(0);
-    setIsUserPanelExpanded(true);
     setIsFilterPanelExpanded(true);
     setResultFilter('all');
     setRatingRange(null);
@@ -376,13 +337,10 @@ function App() {
         {!loading && users.length > 0 && showStickyHeader && (
           <div className="fixed top-16 left-0 right-0 z-40 shadow-lg">
             <div className="max-w-4xl mx-auto px-4">
-              <CollapsibleUserPanel
+              {/* 吸顶时只显示精简用户信息（不可展开） */}
+              <CompactUserPanel
                 user={activeUser}
                 submissionCount={activeSubmissions.length}
-                startDate={queryStartDate || startDate}
-                endDate={queryEndDate || endDate}
-                isExpanded={isUserPanelExpanded}
-                onToggle={() => setIsUserPanelExpanded(!isUserPanelExpanded)}
               />
               <CollapsibleFilterPanel
                 submissions={activeSubmissions}
@@ -400,8 +358,7 @@ function App() {
         {/* 占位的空白，防止固定头部出现时内容跳动 */}
         {!loading && users.length > 0 && showStickyHeader && (
           <div className={`transition-all duration-300 ${
-            isUserPanelExpanded && isFilterPanelExpanded ? 'h-[500px]' :
-            isUserPanelExpanded || isFilterPanelExpanded ? 'h-64' : 'h-32'
+            isFilterPanelExpanded ? 'h-[420px]' : 'h-28'
           }`} />
         )}
 
