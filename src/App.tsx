@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TagInput, UserCard, SubmissionList, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
+import { TagInput, UserCard, SubmissionList, SubmissionFilterPanel, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
 import { useUserQuery, useTheme } from './hooks';
 import './i18n';
 import type { CFUser } from './types';
@@ -160,6 +160,96 @@ function CollapsibleUserPanel({ user, submissionCount, startDate, endDate, isExp
 }
 
 /**
+ * 可折叠的筛选面板
+ */
+interface CollapsibleFilterPanelProps {
+  submissions: any[];
+  resultFilter: 'all' | 'accepted' | 'rejected';
+  ratingRange: { min: number | null; max: number | null } | null;
+  onResultFilterChange: (filter: 'all' | 'accepted' | 'rejected') => void;
+  onRatingRangeChange: (range: { min: number | null; max: number | null } | null) => void;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+function CollapsibleFilterPanel({ 
+  submissions, 
+  resultFilter, 
+  ratingRange, 
+  onResultFilterChange, 
+  onRatingRangeChange,
+  isExpanded,
+  onToggle,
+}: CollapsibleFilterPanelProps) {
+  const { t } = useTranslation();
+
+  // 计算筛选后的数量
+  const filteredCount = submissions.filter((sub) => {
+    if (resultFilter === 'accepted' && sub.verdict !== 'OK') return false;
+    if (resultFilter === 'rejected' && sub.verdict === 'OK') return false;
+    if (ratingRange && ratingRange.min !== null && ratingRange.max !== null) {
+      const rating = sub.problem.rating;
+      if (rating === undefined || rating === null || rating < ratingRange.min || rating > ratingRange.max) return false;
+    }
+    return true;
+  }).length;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      {/* 折叠状态：精简筛选状态 */}
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500 dark:text-gray-400">{resultFilter === 'all' ? t('filter.all') : resultFilter === 'accepted' ? t('filter.accepted') : t('filter.rejected')}</span>
+            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+              resultFilter === 'accepted' ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400' :
+              resultFilter === 'rejected' ? 'bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400' :
+              'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
+            }`}>
+              {filteredCount}
+            </span>
+          </div>
+          {ratingRange && (
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="text-gray-400">·</span>
+              <span className="text-gray-500 dark:text-gray-400">Rating: {ratingRange.min}-{ratingRange.max}</span>
+            </div>
+          )}
+        </div>
+        
+        <button
+          onClick={onToggle}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+        >
+          <span>{t('filter.adjust')}</span>
+          <svg 
+            className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+      
+      {/* 展开状态：完整筛选面板 */}
+      <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="px-4 pb-4">
+          <SubmissionFilterPanel
+            submissions={submissions}
+            resultFilter={resultFilter}
+            ratingRange={ratingRange}
+            onResultFilterChange={onResultFilterChange}
+            onRatingRangeChange={onRatingRangeChange}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
  * 获取 Rating 对应的颜色
  */
 function getRatingColor(rating: number): string {
@@ -184,19 +274,27 @@ function App() {
   const [activeUserIndex, setActiveUserIndex] = useState(0);
   // 用户信息面板是否展开
   const [isUserPanelExpanded, setIsUserPanelExpanded] = useState(true);
+  // 筛选面板是否展开
+  const [isFilterPanelExpanded, setIsFilterPanelExpanded] = useState(true);
   // 是否显示固定头部
   const [showStickyHeader, setShowStickyHeader] = useState(false);
+  
+  // 筛选状态（提升到 App 层级，方便固定面板共享）
+  const [resultFilter, setResultFilter] = useState<'all' | 'accepted' | 'rejected'>('all');
+  const [ratingRange, setRatingRange] = useState<{ min: number | null; max: number | null } | null>(null);
 
-  // 当用户列表变化时，重置选中索引
+  // 当用户列表变化时，重置选中索引和筛选
   useEffect(() => {
     setActiveUserIndex(0);
     setIsUserPanelExpanded(true);
+    setIsFilterPanelExpanded(true);
+    setResultFilter('all');
+    setRatingRange(null);
   }, [users.map(u => u.handle).join(',')]);
 
   // 监听滚动，控制固定头部显示
   useEffect(() => {
     const handleScroll = () => {
-      // 滚动超过 200px 显示固定头部
       setShowStickyHeader(window.scrollY > 200);
     };
 
@@ -274,7 +372,7 @@ function App() {
           </section>
         )}
 
-        {/* 固定用户信息面板（滚动后显示） */}
+        {/* 固定用户信息 & 筛选面板（滚动后显示） */}
         {!loading && users.length > 0 && showStickyHeader && (
           <div className="fixed top-16 left-0 right-0 z-40 shadow-lg">
             <div className="max-w-4xl mx-auto px-4">
@@ -286,13 +384,25 @@ function App() {
                 isExpanded={isUserPanelExpanded}
                 onToggle={() => setIsUserPanelExpanded(!isUserPanelExpanded)}
               />
+              <CollapsibleFilterPanel
+                submissions={activeSubmissions}
+                resultFilter={resultFilter}
+                ratingRange={ratingRange}
+                onResultFilterChange={setResultFilter}
+                onRatingRangeChange={setRatingRange}
+                isExpanded={isFilterPanelExpanded}
+                onToggle={() => setIsFilterPanelExpanded(!isFilterPanelExpanded)}
+              />
             </div>
           </div>
         )}
 
         {/* 占位的空白，防止固定头部出现时内容跳动 */}
         {!loading && users.length > 0 && showStickyHeader && (
-          <div className={`transition-all duration-300 ${isUserPanelExpanded ? 'h-48' : 'h-16'}`} />
+          <div className={`transition-all duration-300 ${
+            isUserPanelExpanded && isFilterPanelExpanded ? 'h-[500px]' :
+            isUserPanelExpanded || isFilterPanelExpanded ? 'h-64' : 'h-32'
+          }`} />
         )}
 
         {/* 用户提交记录 */}
@@ -310,12 +420,30 @@ function App() {
               </div>
             )}
 
+            {/* 非固定状态的筛选面板 */}
+            {!showStickyHeader && (
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <SubmissionFilterPanel
+                  submissions={activeSubmissions}
+                  resultFilter={resultFilter}
+                  ratingRange={ratingRange}
+                  onResultFilterChange={setResultFilter}
+                  onRatingRangeChange={setRatingRange}
+                />
+              </div>
+            )}
+
             <div className="p-4">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 {t('submission.title')}
               </h3>
               <SubmissionList
                 submissions={activeSubmissions}
+                resultFilter={resultFilter}
+                ratingRange={ratingRange}
+                onResultFilterChange={setResultFilter}
+                onRatingRangeChange={setRatingRange}
+                hideFilterPanel={true}
               />
             </div>
           </section>

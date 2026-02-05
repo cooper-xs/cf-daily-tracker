@@ -63,6 +63,7 @@ const zhCN = {
     noResults: '该筛选条件下无结果',
     filterLabel: '筛选',
     questions: '题',
+    adjust: '调整筛选',
   },
   rating: {
     distribution: '难度分布',
@@ -144,6 +145,7 @@ const enUS = {
     noResults: 'No results for this filter',
     filterLabel: 'Filter',
     questions: 'probs',
+    adjust: 'Adjust Filters',
   },
   rating: {
     distribution: 'Rating Distribution',
