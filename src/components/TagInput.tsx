@@ -143,13 +143,14 @@ export function TagInput({
     user => !tags.some(tag => tag.toLowerCase() === user.toLowerCase())
   );
 
-  // 当聚焦且有历史记录时，自动显示历史面板
-  // 解决首次进入页面 localStorage 延迟加载导致的问题
+  // 当聚焦时显示历史面板，失焦时隐藏
   useEffect(() => {
-    if (isFocused && availableRecentUsers.length > 0) {
+    if (isFocused) {
       setShowRecent(true);
+    } else {
+      setShowRecent(false);
     }
-  }, [isFocused, availableRecentUsers]);
+  }, [isFocused]);
 
   return (
     <div ref={containerRef} className="w-full space-y-3 relative">
@@ -307,11 +308,6 @@ export function TagInput({
       <div className="flex items-center justify-between text-sm">
         <p className="text-gray-500 dark:text-gray-400">
           {t('user.inputHint')} · {t('user.added')} {tags.length}/10 {t('user.users')}
-          {isFocused && availableRecentUsers.length > 0 && (
-            <span className="ml-2 text-blue-500 dark:text-blue-400">
-              ↓ 最近使用过 {availableRecentUsers.length} 个ID，点击快速添加
-            </span>
-          )}
         </p>
         <p className="text-gray-400 dark:text-gray-500 text-xs">
           {t('user.keyboardHint')}
