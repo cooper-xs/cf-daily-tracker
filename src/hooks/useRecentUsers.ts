@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'cf_tracker_recent_users';
-const MAX_RECENT_USERS = 10;
+const MAX_RECENT_USERS = 20;
 
 /**
  * 管理最近使用过的用户 ID

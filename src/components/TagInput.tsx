@@ -295,6 +295,11 @@ export function TagInput({
       <div className="flex items-center justify-between text-sm">
         <p className="text-gray-500 dark:text-gray-400">
           {t('user.inputHint')} · {t('user.added')} {tags.length}/10 {t('user.users')}
+          {isFocused && availableRecentUsers.length > 0 && (
+            <span className="ml-2 text-blue-500 dark:text-blue-400">
+              ↓ 最近使用过 {availableRecentUsers.length} 个ID，点击快速添加
+            </span>
+          )}
         </p>
         <p className="text-gray-400 dark:text-gray-500 text-xs">
           {t('user.keyboardHint')}
