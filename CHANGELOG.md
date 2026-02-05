@@ -17,78 +17,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Problem Tag Analysis**: Breakdown of solved problems by category/tags
 - **Streak Tracking**: Consecutive days of problem solving
 - **Export Functionality**: Export statistics to CSV/JSON
-- **Dark Mode Improvements**: Better contrast and color schemes
-- **Performance Optimizations**: Virtual scrolling for large submission lists
-- **PWA Support**: Offline capability and installable app
 
 ---
 
-## [1.0.0] - 2025-02-05
+## [1.0.0] - 2026-02-05
 
 ### Added
 
-- **Multi-user Query**: Support querying up to 10 users simultaneously with tab-based navigation
-- **Sticky Header**: User info and filter panels stick to top when scrolling
-- **Collapsible Filter Panel**: Filter section can be expanded/collapsed, showing summary when collapsed
-- **Back to Top Button**: Floating button appears after scrolling down
-- **Mobile Responsive**: Website title now visible on mobile devices
-- **Footer Enhancements**: GitHub link button and improved author attribution (@cooper-xs, @yume, @TARS)
-- **Rating Distribution Filter**: Progress bars dynamically adjust based on selected filter (all/accepted/rejected)
-- **Deduplication Statistics**: Unique solved problems count displayed in rating distribution
-- **Date Range Selection**: Filter submissions by custom date range
-- **Internationalization**: Full Chinese and English language support
-- **Dark Mode**: Complete dark theme support with system preference detection
-- **Theme Switcher**: Light/Dark/System theme toggle in header
+- **Multi-user Query with Tabs**: Support querying multiple users with tab-based navigation to switch between users
+- **Sticky Header**: User info and filter panels stick to top when scrolling down
+- **Collapsible Filter Panel**: Filter section can be expanded/collapsed with "Adjust Filters" button
+- **Back to Top Button**: Floating button appears after scrolling down 300px
+- **Mobile Responsive**: Website title now visible on mobile devices with adjusted font size
+- **Footer Enhancements**: 
+  - GitHub link button with icon
+  - Improved author attribution with gradient styled @TARS 🤖
+  - Better visual hierarchy with cards and spacing
+- **Progress Bar Optimization**: Progress bars dynamically adjust max value based on selected filter (all/accepted/rejected)
+- **User Card Improvements**: Date labels dynamically display based on selected time range
 
 ### Changed
 
-- Improved progress bar visualization when filtering by accepted/rejected status
-- Refined user card layout and information hierarchy
-- Enhanced tab switching animation for multi-user view
-
-### Fixed
-
-- Progress bar scaling when filtered results have different max values
-- Emoji color consistency in author attribution
-- Scroll behavior with sticky headers to prevent content jumping
+- Sticky header now uses overlay mode instead of placeholder to prevent content jumping
+- Compact user info panel in sticky header (non-expandable)
+- Filter panel in sticky header defaults to collapsed state
 
 ---
 
-## [0.9.0] - 2025-02-04
+## [0.9.0] - 2026-02-05
 
 ### Added
 
-- **Rating Distribution Visualization**: Show problem difficulty distribution with progress bars
-- **Problem Deduplication**: Count unique solved problems per rating range
-- **Filter by Rating Range**: Click on rating bars to filter submissions
-- **Result Filter Tabs**: Quick filter by All/Accepted/Rejected with counts
-- **Footer**: Basic footer with Codeforces attribution and author credits
+- **Rating Distribution Visualization**: Show problem difficulty distribution with stacked progress bars
+- **Problem Deduplication**: Count unique solved problems per rating range (each problem only counted once)
+- **Filter by Rating Range**: Click on rating distribution bars to filter submissions by difficulty
+- **Result Filter Tabs**: Quick filter by All/Accepted/Rejected with count badges
+- **Theme Toggle**: Light/Dark/System theme switcher in header
+- **Internationalization**: Full Chinese (zh-CN) and English (en) language support
 
 ### Changed
 
-- Improved submission list layout with difficulty badges
+- Progress bars in "all" mode now use difficulty-specific colors
+- Improved submission list layout with difficulty badges and verdict colors
 
 ---
 
-## [0.5.0] - 2025-02-03
+## [0.5.0] - 2026-02-05
 
 ### Added
 
-- **Basic User Query**: Search Codeforces users by handle
-- **Submission List**: Display user submissions with verdict, time, and language
-- **Batch Query**: Support comma-separated handles for batch lookup
-- **Tag Input Interface**: Add/remove users with keyboard shortcuts
-- **Date Filtering**: Filter submissions by preset date ranges (today, yesterday, last 7/30 days)
+- **Date Range Selection**: Custom date range picker with preset shortcuts (Today, Yesterday, Last 7/30 Days)
+- **Tag-based User Input**: Add/remove multiple users with visual tags
+- **Keyboard Shortcuts**: 
+  - Enter: Add tag
+  - Shift+Enter: Execute search
+  - Backspace: Delete last tag
+- **Submission Filtering**: Filter by submission result (Accepted/Rejected)
+- **Footer**: Basic footer with Codeforces data attribution
+
+### Changed
+
+- Website renamed to "别让我逮到你" (I'm watching you)
+- Improved date picker UI with visual selection indicators
 
 ---
 
-## [0.1.0] - 2025-02-02
+## [0.1.0] - 2026-02-05
 
 ### Added
 
-- Initial project setup with React + TypeScript + Vite
-- Tailwind CSS integration
-- Basic project structure and component architecture
+- Initial project setup with React + TypeScript + Vite + Tailwind CSS
+- Basic Codeforces API integration
+- User query by handle with avatar and rating display
+- Submission list with problem name, verdict, time, and language
+- Dark mode support based on system preference
 
 ---
 
@@ -104,4 +106,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. Update version in `package.json`
 3. Create git tag: `git tag -a v1.0.0 -m "Release version 1.0.0"`
 4. Push tag: `git push origin v1.0.0`
-5. Deploy: `./deploy.sh prod`
+5. Deploy: `vercel --prod --yes`
