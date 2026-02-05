@@ -1,21 +1,47 @@
-import { useState, useRef, type KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TagInputProps {
   onSearch: (handles: string[]) => void;
   loading: boolean;
+  recentUsers?: string[];
+  onAddRecentUser?: (handle: string) => void;
+  onRemoveRecentUser?: (handle: string) => void;
+  onClearRecentUsers?: () => void;
 }
 
 /**
  * 标签式用户输入组件
  * 支持回车生成标签，可批量输入多个用户名
+ * 支持最近使用用户快速添加
  */
-export function TagInput({ onSearch, loading }: TagInputProps) {
+export function TagInput({ 
+  onSearch, 
+  loading, 
+  recentUsers = [],
+  onAddRecentUser,
+  onRemoveRecentUser,
+  onClearRecentUsers,
+}: TagInputProps) {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState(false);
+  const [showRecent, setShowRecent] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // 点击外部关闭最近使用面板
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowRecent(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // 添加标签
   const addTag = (value: string) => {
@@ -24,6 +50,12 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
       setTags([...tags, trimmed]);
     }
     setInputValue('');
+  };
+
+  // 从最近使用添加标签
+  const addTagFromRecent = (handle: string) => {
+    addTag(handle);
+    inputRef.current?.focus();
   };
 
   // 删除标签
@@ -80,12 +112,18 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
         setTags([...tags, trimmedInput]);
       }
       // 立即搜索（包含当前输入值）
-      onSearch([...tags, trimmedInput]);
+      const allHandles = [...tags, trimmedInput];
+      onSearch(allHandles);
+      // 记录到最近使用
+      allHandles.forEach(handle => onAddRecentUser?.(handle));
       setInputValue('');
     } else if (tags.length > 0) {
       // 只有标签时直接搜索
       onSearch(tags);
+      // 记录到最近使用
+      tags.forEach(handle => onAddRecentUser?.(handle));
     }
+    setShowRecent(false);
   };
 
   // 清空所有标签
@@ -95,13 +133,18 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
     inputRef.current?.focus();
   };
 
+  // 过滤掉已在标签中的历史用户
+  const availableRecentUsers = recentUsers.filter(
+    user => !tags.some(tag => tag.toLowerCase() === user.toLowerCase())
+  );
+
   return (
-    <div className="w-full space-y-3">
+    <div ref={containerRef} className="w-full space-y-3 relative">
       {/* 标签输入框 */}
       <div
         onClick={() => inputRef.current?.focus()}
         className={`min-h-[52px] px-3 py-2 rounded-xl border-2 transition-all cursor-text
-                   flex flex-wrap items-center gap-2
+                   flex flex-wrap items-center gap-2 relative z-10
                    ${isFocused 
                      ? 'border-blue-400 bg-white dark:bg-gray-800 shadow-sm ring-4 ring-blue-500/10' 
                      : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 hover:border-gray-300 dark:hover:border-gray-600'}
@@ -138,7 +181,12 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => setIsFocused(true)}
+          onFocus={() => {
+            setIsFocused(true);
+            if (availableRecentUsers.length > 0) {
+              setShowRecent(true);
+            }
+          }}
           onBlur={() => setIsFocused(false)}
           placeholder={tags.length === 0 ? t('user.placeholder') : ''}
           disabled={loading}
@@ -177,6 +225,71 @@ export function TagInput({ onSearch, loading }: TagInputProps) {
           </button>
         </div>
       </div>
+
+      {/* 最近使用下拉面板 */}
+      {showRecent && availableRecentUsers.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 
+                        rounded-xl border border-gray-200 dark:border-gray-700 
+                        shadow-lg dark:shadow-gray-900/50 z-20 overflow-hidden">
+          {/* 标题栏 */}
+          <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 dark:border-gray-700">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              最近使用
+            </span>
+            {onClearRecentUsers && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClearRecentUsers();
+                  setShowRecent(false);
+                }}
+                className="text-xs text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+              >
+                清空
+              </button>
+            )}
+          </div>
+          
+          {/* 历史用户列表 */}
+          <div className="max-h-[200px] overflow-y-auto py-1">
+            {availableRecentUsers.map((user, index) => (
+              <div
+                key={`${user}-${index}`}
+                className="flex items-center justify-between px-3 py-2 
+                           hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    addTagFromRecent(user);
+                    setShowRecent(false);
+                  }}
+                  className="flex-1 text-left text-sm text-gray-700 dark:text-gray-300 
+                             hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  {user}
+                </button>
+                {onRemoveRecentUser && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveRecentUser(user);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1 rounded 
+                               hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+                    title="删除"
+                  >
+                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 提示信息 */}
       <div className="flex items-center justify-between text-sm">

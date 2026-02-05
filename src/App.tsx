@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TagInput, UserCard, SubmissionList, SubmissionFilterPanel, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
-import { useUserQuery, useTheme } from './hooks';
+import { useUserQuery, useTheme, useRecentUsers } from './hooks';
 import './i18n';
 import type { CFUser } from './types';
 
@@ -233,6 +233,7 @@ function App() {
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const { loading, error, users, submissions, startDate, endDate, queryStartDate, queryEndDate, setDateRange, queryUsersByHandles, clearError } = useUserQuery();
+  const { recentUsers, addRecentUser, removeRecentUser, clearRecentUsers } = useRecentUsers();
   
   // 当前选中的用户索引
   const [activeUserIndex, setActiveUserIndex] = useState(0);
@@ -307,7 +308,14 @@ function App() {
           </div>
 
           {/* 标签式用户输入 */}
-          <TagInput onSearch={queryUsersByHandles} loading={loading} />
+          <TagInput 
+            onSearch={queryUsersByHandles} 
+            loading={loading}
+            recentUsers={recentUsers}
+            onAddRecentUser={addRecentUser}
+            onRemoveRecentUser={removeRecentUser}
+            onClearRecentUsers={clearRecentUsers}
+          />
         </section>
 
         {error && (
