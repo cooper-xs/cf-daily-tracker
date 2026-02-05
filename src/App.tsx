@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { TagInput, UserCard, SubmissionList, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
 import { useUserQuery, useTheme } from './hooks';
 import './i18n';
+import type { CFUser } from './types';
 
 /**
  * 回到顶部按钮组件
@@ -12,7 +13,6 @@ function BackToTopButton() {
 
   useEffect(() => {
     const toggleVisibility = () => {
-      // 滚动超过 300px 显示按钮
       if (window.scrollY > 300) {
         setIsVisible(true);
       } else {
@@ -59,15 +59,158 @@ function BackToTopButton() {
 }
 
 /**
+ * 用户 Tab 组件
+ */
+interface UserTabsProps {
+  users: CFUser[];
+  activeIndex: number;
+  onSelect: (index: number) => void;
+}
+
+function UserTabs({ users, activeIndex, onSelect }: UserTabsProps) {
+  return (
+    <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-x-auto scrollbar-hide">
+      {users.map((user, index) => (
+        <button
+          key={user.handle}
+          onClick={() => onSelect(index)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all
+                     ${activeIndex === index
+                       ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
+                     }`}
+        >
+          <img
+            src={user.avatar}
+            alt={user.handle}
+            className="w-5 h-5 rounded-full"
+          />
+          <span>{user.handle}</span>
+          <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeIndex === index ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'}`}>
+            {user.rating}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * 可折叠的用户信息面板
+ */
+interface CollapsibleUserPanelProps {
+  user: CFUser;
+  submissionCount: number;
+  startDate: string;
+  endDate: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+function CollapsibleUserPanel({ user, submissionCount, startDate, endDate, isExpanded, onToggle }: CollapsibleUserPanelProps) {
+  return (
+    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      {/* 折叠状态：精简信息 */}
+      <div 
+        className={`flex items-center justify-between px-4 transition-all duration-300 ${isExpanded ? 'py-2' : 'py-3'}`}
+      >
+        <div className="flex items-center gap-3">
+          <img src={user.avatar} alt={user.handle} className="w-10 h-10 rounded-full" />
+          <div>
+            <div className="font-semibold text-gray-900 dark:text-white">{user.handle}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+              <span className="font-medium" style={{ color: getRatingColor(user.rating) }}>
+                {user.rank} · {user.rating}
+              </span>
+              <span>·</span>
+              <span>{submissionCount} submissions</span>
+            </div>
+          </div>
+        </div>
+        
+        <button
+          onClick={onToggle}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label={isExpanded ? 'Collapse' : 'Expand'}
+        >
+          <svg 
+            className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+      
+      {/* 展开状态：完整信息 */}
+      <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className="px-4 pb-4">
+          <UserCard
+            user={user}
+            submissionCount={submissionCount}
+            startDate={startDate}
+            endDate={endDate}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 获取 Rating 对应的颜色
+ */
+function getRatingColor(rating: number): string {
+  if (rating < 1200) return '#808080';
+  if (rating < 1400) return '#008000';
+  if (rating < 1600) return '#03a89e';
+  if (rating < 1900) return '#0000ff';
+  if (rating < 2100) return '#aa00aa';
+  if (rating < 2400) return '#ff8c00';
+  return '#ff0000';
+}
+
+/**
  * 主应用组件
  */
 function App() {
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const { loading, error, users, submissions, startDate, endDate, queryStartDate, queryEndDate, setDateRange, queryUsersByHandles, clearError } = useUserQuery();
+  
+  // 当前选中的用户索引
+  const [activeUserIndex, setActiveUserIndex] = useState(0);
+  // 用户信息面板是否展开
+  const [isUserPanelExpanded, setIsUserPanelExpanded] = useState(true);
+  // 是否显示固定头部
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
+
+  // 当用户列表变化时，重置选中索引
+  useEffect(() => {
+    setActiveUserIndex(0);
+    setIsUserPanelExpanded(true);
+  }, [users.map(u => u.handle).join(',')]);
+
+  // 监听滚动，控制固定头部显示
+  useEffect(() => {
+    const handleScroll = () => {
+      // 滚动超过 200px 显示固定头部
+      setShowStickyHeader(window.scrollY > 200);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 当前选中的用户
+  const activeUser = users[activeUserIndex];
+  const activeSubmissions = activeUser ? (submissions.get(activeUser.handle) || []) : [];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      {/* 固定顶部导航 */}
       <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -120,34 +263,62 @@ function App() {
           </div>
         )}
 
-        {!loading && users.length > 0 && (
-          <div className="space-y-6">
-            {users.map((user) => (
-              <section
-                key={user.handle}
-                className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden
-                           bg-white dark:bg-gray-800"
-              >
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                  <UserCard
-                    user={user}
-                    submissionCount={submissions.get(user.handle)?.length || 0}
-                    startDate={queryStartDate || startDate}
-                    endDate={queryEndDate || endDate}
-                  />
-                </div>
+        {/* 用户 Tab 切换（多人查询时显示） */}
+        {!loading && users.length > 1 && (
+          <section className="mb-4">
+            <UserTabs 
+              users={users} 
+              activeIndex={activeUserIndex} 
+              onSelect={setActiveUserIndex} 
+            />
+          </section>
+        )}
 
-                <div className="p-4">
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    {t('submission.title')}
-                  </h3>
-                  <SubmissionList
-                    submissions={submissions.get(user.handle) || []}
-                  />
-                </div>
-              </section>
-            ))}
+        {/* 固定用户信息面板（滚动后显示） */}
+        {!loading && users.length > 0 && showStickyHeader && (
+          <div className="fixed top-16 left-0 right-0 z-40 shadow-lg">
+            <div className="max-w-4xl mx-auto px-4">
+              <CollapsibleUserPanel
+                user={activeUser}
+                submissionCount={activeSubmissions.length}
+                startDate={queryStartDate || startDate}
+                endDate={queryEndDate || endDate}
+                isExpanded={isUserPanelExpanded}
+                onToggle={() => setIsUserPanelExpanded(!isUserPanelExpanded)}
+              />
+            </div>
           </div>
+        )}
+
+        {/* 占位的空白，防止固定头部出现时内容跳动 */}
+        {!loading && users.length > 0 && showStickyHeader && (
+          <div className={`transition-all duration-300 ${isUserPanelExpanded ? 'h-48' : 'h-16'}`} />
+        )}
+
+        {/* 用户提交记录 */}
+        {!loading && users.length > 0 && (
+          <section className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800">
+            {/* 非固定状态的用户信息 */}
+            {!showStickyHeader && (
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <UserCard
+                  user={activeUser}
+                  submissionCount={activeSubmissions.length}
+                  startDate={queryStartDate || startDate}
+                  endDate={queryEndDate || endDate}
+                />
+              </div>
+            )}
+
+            <div className="p-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                {t('submission.title')}
+              </h3>
+              <SubmissionList
+                submissions={activeSubmissions}
+              />
+            </div>
+          </section>
         )}
 
         {!loading && users.length === 0 && !error && (
