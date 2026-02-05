@@ -46,8 +46,11 @@ export function TagInput({
   // 添加标签
   const addTag = (value: string) => {
     const trimmed = value.trim();
-    if (trimmed && !tags.includes(trimmed) && tags.length < 10) {
-      setTags([...tags, trimmed]);
+    if (trimmed && tags.length < 10) {
+      setTags((prev) => {
+        if (prev.includes(trimmed)) return prev;
+        return [...prev, trimmed];
+      });
     }
     setInputValue('');
   };
@@ -274,7 +277,8 @@ export function TagInput({
                 >
                   <button
                     type="button"
-                    onClick={() => {
+                    onMouseDown={(e) => {
+                      e.preventDefault();
                       addTagFromRecent(user);
                     }}
                     className="flex-1"
