@@ -25,6 +25,9 @@ function getTodayString(): string {
 export function UserCard({ user, submissionCount, startDate, endDate }: UserCardProps) {
   const { t } = useTranslation();
   const rankColor = RankColors[user.rank] || '#808080';
+  
+  // 安全获取 rank 显示文本
+  const rankDisplay = user.rank ? user.rank.replace(/-/g, ' ') : 'unrated';
 
   // 判断是否今日
   const today = getTodayString();
@@ -58,7 +61,7 @@ export function UserCard({ user, submissionCount, startDate, endDate }: UserCard
             {user.handle}
           </a>
           <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-            {user.rank.replace(/-/g, ' ')}
+            {rankDisplay}
           </p>
         </div>
       </div>

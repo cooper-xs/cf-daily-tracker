@@ -141,6 +141,14 @@ export function TagInput({
     user => !tags.some(tag => tag.toLowerCase() === user.toLowerCase())
   );
 
+  // 当聚焦且有历史记录时，自动显示历史面板
+  // 解决首次进入页面 localStorage 延迟加载导致的问题
+  useEffect(() => {
+    if (isFocused && availableRecentUsers.length > 0) {
+      setShowRecent(true);
+    }
+  }, [isFocused, availableRecentUsers]);
+
   return (
     <div ref={containerRef} className="w-full space-y-3 relative">
       {/* 标签输入框 */}
@@ -186,9 +194,6 @@ export function TagInput({
           onKeyDown={handleKeyDown}
           onFocus={() => {
             setIsFocused(true);
-            if (availableRecentUsers.length > 0) {
-              setShowRecent(true);
-            }
           }}
           onBlur={() => setIsFocused(false)}
           placeholder={tags.length === 0 ? t('user.placeholder') : ''}
