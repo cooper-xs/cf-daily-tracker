@@ -250,43 +250,45 @@ export function TagInput({
             )}
           </div>
           
-          {/* 历史用户列表 */}
-          <div className="max-h-[200px] overflow-y-auto py-1">
-            {availableRecentUsers.map((user, index) => (
-              <div
-                key={`${user}-${index}`}
-                className="flex items-center justify-between px-3 py-2 
-                           hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    addTagFromRecent(user);
-                    setShowRecent(false);
-                  }}
-                  className="flex-1 text-left text-sm text-gray-700 dark:text-gray-300 
-                             hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          {/* 历史用户标签云 */}
+          <div className="max-h-[180px] overflow-y-auto p-3">
+            <div className="flex flex-wrap gap-2">
+              {availableRecentUsers.map((user, index) => (
+                <div
+                  key={`${user}-${index}`}
+                  className="group inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg
+                             bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40
+                             text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300
+                             text-sm font-medium transition-all cursor-pointer"
                 >
-                  {user}
-                </button>
-                {onRemoveRecentUser && (
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRemoveRecentUser(user);
+                    onClick={() => {
+                      addTagFromRecent(user);
                     }}
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded 
-                               hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
-                    title="删除"
+                    className="flex-1"
                   >
-                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    {user}
                   </button>
-                )}
-              </div>
-            ))}
+                  {onRemoveRecentUser && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemoveRecentUser(user);
+                      }}
+                      className="w-4 h-4 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600
+                                 flex items-center justify-center transition-colors ml-0.5"
+                      title="删除"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
