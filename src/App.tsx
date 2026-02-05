@@ -355,40 +355,29 @@ function App() {
           </div>
         )}
 
-        {/* 占位的空白，防止固定头部出现时内容跳动 */}
-        {!loading && users.length > 0 && showStickyHeader && (
-          <div className={`transition-all duration-300 ${
-            isFilterPanelExpanded ? 'h-[420px]' : 'h-28'
-          }`} />
-        )}
-
         {/* 用户提交记录 */}
         {!loading && users.length > 0 && (
           <section className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800">
-            {/* 非固定状态的用户信息 */}
-            {!showStickyHeader && (
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <UserCard
-                  user={activeUser}
-                  submissionCount={activeSubmissions.length}
-                  startDate={queryStartDate || startDate}
-                  endDate={queryEndDate || endDate}
-                />
-              </div>
-            )}
+            {/* 文档流中的用户信息（始终存在，吸顶时会被遮挡） */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <UserCard
+                user={activeUser}
+                submissionCount={activeSubmissions.length}
+                startDate={queryStartDate || startDate}
+                endDate={queryEndDate || endDate}
+              />
+            </div>
 
-            {/* 非固定状态的筛选面板 */}
-            {!showStickyHeader && (
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <SubmissionFilterPanel
-                  submissions={activeSubmissions}
-                  resultFilter={resultFilter}
-                  ratingRange={ratingRange}
-                  onResultFilterChange={setResultFilter}
-                  onRatingRangeChange={setRatingRange}
-                />
-              </div>
-            )}
+            {/* 文档流中的筛选面板（始终存在，吸顶时会被遮挡） */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <SubmissionFilterPanel
+                submissions={activeSubmissions}
+                resultFilter={resultFilter}
+                ratingRange={ratingRange}
+                onResultFilterChange={setResultFilter}
+                onRatingRangeChange={setRatingRange}
+              />
+            </div>
 
             <div className="p-4">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
