@@ -87,7 +87,15 @@ export function RatingDistribution({
   }
 
   // 找出最大值用于计算百分比
-  const maxAttempted = Math.max(...distribution.map(d => d.attempted));
+  // 根据筛选条件动态调整最大值，使进度条更美观
+  const maxValue = useMemo(() => {
+    if (resultFilter === 'accepted') {
+      return Math.max(...distribution.map(d => d.solved), 1);
+    } else if (resultFilter === 'rejected') {
+      return Math.max(...distribution.map(d => d.failed), 1);
+    }
+    return Math.max(...distribution.map(d => d.attempted), 1);
+  }, [distribution, resultFilter]);
 
   // 显示标题
   const totalCount = submissions.length;
@@ -153,7 +161,7 @@ export function RatingDistribution({
                       <div
                         className="absolute left-0 top-0 h-full rounded-full transition-all duration-300"
                         style={{
-                          width: `${Math.max((item.attempted / maxAttempted) * 100, item.attempted > 0 ? 4 : 0)}%`,
+                          width: `${Math.max((item.attempted / maxValue) * 100, item.attempted > 0 ? 4 : 0)}%`,
                           backgroundColor: item.color + '30',
                           zIndex: 1,
                         }}
@@ -162,7 +170,7 @@ export function RatingDistribution({
                       <div
                         className="absolute left-0 top-0 h-full rounded-full transition-all duration-300"
                         style={{
-                          width: `${Math.max((item.solved / maxAttempted) * 100, item.solved > 0 ? 4 : 0)}%`,
+                          width: `${Math.max((item.solved / maxValue) * 100, item.solved > 0 ? 4 : 0)}%`,
                           backgroundColor: item.color,
                           zIndex: 2,
                         }}
@@ -186,7 +194,7 @@ export function RatingDistribution({
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{
-                          width: `${Math.max((item.solved / maxAttempted) * 100, item.solved > 0 ? 8 : 0)}%`,
+                          width: `${Math.max((item.solved / maxValue) * 100, item.solved > 0 ? 4 : 0)}%`,
                           backgroundColor: '#22c55e',
                         }}
                       />
@@ -202,7 +210,7 @@ export function RatingDistribution({
                       <div
                         className="h-full rounded-full transition-all duration-300"
                         style={{
-                          width: `${Math.max((item.failed / maxAttempted) * 100, item.failed > 0 ? 8 : 0)}%`,
+                          width: `${Math.max((item.failed / maxValue) * 100, item.failed > 0 ? 4 : 0)}%`,
                           backgroundColor: '#ef444480',
                         }}
                       />
