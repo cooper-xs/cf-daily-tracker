@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TagInput, UserCard, SubmissionList, SubmissionFilterPanel, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
-import { useUserQuery, useTheme, useRecentUsers } from './hooks';
+import { useUserQuery, useTheme, useSearchHistory } from './hooks';
 import './i18n';
 import type { CFUser } from './types';
 
@@ -233,7 +233,7 @@ function App() {
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const { loading, error, users, submissions, startDate, endDate, queryStartDate, queryEndDate, setDateRange, queryUsersByHandles, clearError } = useUserQuery();
-  const { recentUsers, addRecentUser, removeRecentUser, clearRecentUsers } = useRecentUsers();
+  const { history, addToHistory, removeFromHistory, clearHistory } = useSearchHistory();
   
   // 当前选中的用户索引
   const [activeUserIndex, setActiveUserIndex] = useState(0);
@@ -311,10 +311,10 @@ function App() {
           <TagInput 
             onSearch={queryUsersByHandles} 
             loading={loading}
-            recentUsers={recentUsers}
-            onAddRecentUser={addRecentUser}
-            onRemoveRecentUser={removeRecentUser}
-            onClearRecentUsers={clearRecentUsers}
+            recentUsers={history}
+            onAddRecentUser={addToHistory}
+            onRemoveRecentUser={removeFromHistory}
+            onClearRecentUsers={clearHistory}
           />
         </section>
 

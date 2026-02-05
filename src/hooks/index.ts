@@ -124,28 +124,83 @@ export function useUserQuery() {
 
 /**
  * 搜索历史 Hook
+ * 支持增删改查，与 cf_tracker_search_history localStorage 同步
  */
 export function useSearchHistory() {
   const [history, setHistory] = useState<string[]>([]);
 
+  // 从本地存储加载
   useEffect(() => {
-    // 从本地存储加载
     try {
       const data = localStorage.getItem('cf_tracker_search_history');
       if (data) {
-        setHistory(JSON.parse(data));
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          setHistory(parsed);
+        }
       }
     } catch {
       // 忽略错误
     }
   }, []);
 
+  // 同步到本地存储
+  useEffect(() => {
+    try {
+      localStorage.setItem('cf_tracker_search_history', JSON.stringify(history));
+    } catch {
+      // 忽略存储错误
+    }
+  }, [history]);
+
+  /**
+   * 添加用户到历史列表（移到最前面）
+   */
+  const addToHistory = useCallback((handle: string) => {
+    const trimmed = handle.trim();
+    if (!trimmed) return;
+
+    setHistory((prev) => {
+      const filtered = prev.filter((h) => h.toLowerCase() !== trimmed.toLowerCase());
+      return [trimmed, ...filtered].slice(0, 20);
+    });
+  }, []);
+
+  /**
+   * 批量添加用户
+   */
+  const addMultipleToHistory = useCallback((handles: string[]) => {
+    const validHandles = handles.map((h) => h.trim()).filter(Boolean);
+    if (validHandles.length === 0) return;
+
+    setHistory((prev) => {
+      const lowerNew = validHandles.map((h) => h.toLowerCase());
+      const filtered = prev.filter((h) => !lowerNew.includes(h.toLowerCase()));
+      return [...validHandles, ...filtered].slice(0, 20);
+    });
+  }, []);
+
+  /**
+   * 移除某个历史记录
+   */
+  const removeFromHistory = useCallback((handle: string) => {
+    setHistory((prev) => prev.filter((h) => h.toLowerCase() !== handle.toLowerCase()));
+  }, []);
+
+  /**
+   * 清空所有历史记录
+   */
   const clearHistory = useCallback(() => {
-    localStorage.removeItem('cf_tracker_search_history');
     setHistory([]);
   }, []);
 
-  return { history, clearHistory };
+  return {
+    history,
+    addToHistory,
+    addMultipleToHistory,
+    removeFromHistory,
+    clearHistory,
+  };
 }
 
 /**
@@ -169,4 +224,3 @@ export function useSystemTheme() {
 
 export { useTheme } from './useTheme';
 export type { ThemeMode } from './useTheme';
-export { useRecentUsers } from './useRecentUsers';
