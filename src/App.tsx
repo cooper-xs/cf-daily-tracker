@@ -85,7 +85,7 @@ function UserTabs({ users, activeIndex, onSelect }: UserTabsProps) {
             alt={user.handle}
             className="w-5 h-5 rounded-full shrink-0"
           />
-          <span className="truncate max-w-[80px] sm:max-w-[120px]">{user.handle}</span>
+          <span className="truncate max-w-[100px] sm:max-w-[140px]">{user.handle}</span>
           <span className={`text-xs px-1.5 py-0.5 rounded-full shrink-0 ${activeIndex === index ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'}`}>
             {user.rating}
           </span>
@@ -242,7 +242,7 @@ function getRatingColor(rating: number): string {
 }
 
 // 应用版本号（与 package.json 保持一致）
-const APP_VERSION = '1.0.4';
+const APP_VERSION = '1.0.5';
 
 /**
  * 主应用组件
