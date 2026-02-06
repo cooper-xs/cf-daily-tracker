@@ -10,18 +10,18 @@ interface RatingDistributionProps {
   resultFilter?: 'all' | 'accepted' | 'rejected'; // 通过性筛选状态
 }
 
-// Rating 区间定义
+// Rating 区间定义（分数由高到低排序）
 const RATING_RANGES = [
-  { min: 800, max: 1199, label: 'Newbie', color: '#808080' },
-  { min: 1200, max: 1399, label: 'Pupil', color: '#008000' },
-  { min: 1400, max: 1599, label: 'Specialist', color: '#03a89e' },
-  { min: 1600, max: 1899, label: 'Expert', color: '#0000ff' },
-  { min: 1900, max: 2099, label: 'Candidate Master', color: '#aa00aa' },
-  { min: 2100, max: 2299, label: 'Master', color: '#ff8c00' },
-  { min: 2300, max: 2399, label: 'International Master', color: '#ff8c00' },
-  { min: 2400, max: 2599, label: 'Grandmaster', color: '#ff0000' },
-  { min: 2600, max: 2999, label: 'International Grandmaster', color: '#ff0000' },
   { min: 3000, max: 5000, label: 'Legendary Grandmaster', color: '#ff0000' },
+  { min: 2600, max: 2999, label: 'International Grandmaster', color: '#ff0000' },
+  { min: 2400, max: 2599, label: 'Grandmaster', color: '#ff0000' },
+  { min: 2300, max: 2399, label: 'International Master', color: '#ff8c00' },
+  { min: 2100, max: 2299, label: 'Master', color: '#ff8c00' },
+  { min: 1900, max: 2099, label: 'Candidate Master', color: '#aa00aa' },
+  { min: 1600, max: 1899, label: 'Expert', color: '#0000ff' },
+  { min: 1400, max: 1599, label: 'Specialist', color: '#03a89e' },
+  { min: 1200, max: 1399, label: 'Pupil', color: '#008000' },
+  { min: 800, max: 1199, label: 'Newbie', color: '#808080' },
 ];
 
 // 未定分题目区间
