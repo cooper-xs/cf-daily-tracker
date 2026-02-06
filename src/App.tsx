@@ -74,7 +74,7 @@ function UserTabs({ users, activeIndex, onSelect }: UserTabsProps) {
         <button
           key={user.handle}
           onClick={() => onSelect(index)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all min-w-0
                      ${activeIndex === index
                        ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
@@ -83,10 +83,10 @@ function UserTabs({ users, activeIndex, onSelect }: UserTabsProps) {
           <img
             src={user.avatar}
             alt={user.handle}
-            className="w-5 h-5 rounded-full"
+            className="w-5 h-5 rounded-full shrink-0"
           />
-          <span>{user.handle}</span>
-          <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeIndex === index ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'}`}>
+          <span className="truncate max-w-[80px] sm:max-w-[120px]">{user.handle}</span>
+          <span className={`text-xs px-1.5 py-0.5 rounded-full shrink-0 ${activeIndex === index ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'}`}>
             {user.rating}
           </span>
         </button>
@@ -242,7 +242,7 @@ function getRatingColor(rating: number): string {
 }
 
 // 应用版本号（与 package.json 保持一致）
-const APP_VERSION = '1.0.3';
+const APP_VERSION = '1.0.4';
 
 /**
  * 主应用组件

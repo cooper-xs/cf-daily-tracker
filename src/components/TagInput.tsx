@@ -364,7 +364,7 @@ export function TagInput({
         <p className="text-gray-500 dark:text-gray-400">
           {t('user.inputHint')} · {t('user.added')} {tags.length}/10 {t('user.users')}
         </p>
-        <p className="text-gray-400 dark:text-gray-500 text-xs">
+        <p className="hidden sm:block text-gray-400 dark:text-gray-500 text-xs">
           {t('user.keyboardHint')}
         </p>
       </div>
