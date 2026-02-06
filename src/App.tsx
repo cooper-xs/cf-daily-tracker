@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TagInput, UserCard, SubmissionList, SubmissionFilterPanel, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
 import { useUserQuery, useTheme, useSearchHistory } from './hooks';
@@ -68,13 +68,34 @@ interface UserTabsProps {
 }
 
 function UserTabs({ users, activeIndex, onSelect }: UserTabsProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // 当 activeIndex 变化时，滚动到可见区域
+  useEffect(() => {
+    if (containerRef.current) {
+      const buttons = containerRef.current.querySelectorAll('button');
+      const activeButton = buttons[activeIndex];
+      if (activeButton) {
+        activeButton.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center',
+        });
+      }
+    }
+  }, [activeIndex]);
+
   return (
-    <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-x-auto scrollbar-hide">
+    <div 
+      ref={containerRef}
+      className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl overflow-x-auto scrollbar-hide"
+      style={{ WebkitOverflowScrolling: 'touch' }}
+    >
       {users.map((user, index) => (
         <button
           key={user.handle}
           onClick={() => onSelect(index)}
-          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all min-w-0
+          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex-shrink-0
                      ${activeIndex === index
                        ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
@@ -242,7 +263,7 @@ function getRatingColor(rating: number): string {
 }
 
 // 应用版本号（与 package.json 保持一致）
-const APP_VERSION = '1.0.5';
+const APP_VERSION = '1.0.6';
 
 /**
  * 主应用组件
