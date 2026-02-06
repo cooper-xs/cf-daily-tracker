@@ -108,19 +108,15 @@ export function RatingDistribution({
     return { distribution: dist, unratedData, totalUniqueSolved: totalUnique };
   }, [submissions]);
 
-  if (distribution.length === 0) {
-    return null;
-  }
-
-  // 找出最大值用于计算百分比
-  // 根据筛选条件动态调整最大值，使进度条更美观
+  // 找出最大值用于计算百分比（必须在所有 hooks 之后，return 之前）
   const maxValue = useMemo(() => {
+    if (distribution.length === 0) return 1;
     if (resultFilter === 'accepted') {
-      return Math.max(...distribution.map(d => d.solved), 1);
+      return Math.max(...distribution.map((d: { solved: number }) => d.solved), 1);
     } else if (resultFilter === 'rejected') {
-      return Math.max(...distribution.map(d => d.failed), 1);
+      return Math.max(...distribution.map((d: { failed: number }) => d.failed), 1);
     }
-    return Math.max(...distribution.map(d => d.attempted), 1);
+    return Math.max(...distribution.map((d: { attempted: number }) => d.attempted), 1);
   }, [distribution, resultFilter]);
 
   // 显示标题

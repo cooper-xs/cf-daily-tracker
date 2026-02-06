@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TagInput, UserCard, SubmissionList, SubmissionFilterPanel, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker } from './components';
+import { TagInput, UserCard, SubmissionList, SubmissionFilterPanel, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker, RankingBoard } from './components';
 import { useUserQuery, useTheme, useSearchHistory } from './hooks';
 import './i18n';
 import type { CFUser } from './types';
+import type { RankingDimension } from './components';
 
 /**
  * 回到顶部按钮组件
@@ -263,7 +264,7 @@ function getRatingColor(rating: number): string {
 }
 
 // 应用版本号（与 package.json 保持一致）
-const APP_VERSION = '1.0.7';
+const APP_VERSION = '1.1.0';
 
 /**
  * 主应用组件
@@ -284,6 +285,9 @@ function App() {
   // 筛选状态（提升到 App 层级，方便固定面板共享）
   const [resultFilter, setResultFilter] = useState<'all' | 'accepted' | 'rejected'>('all');
   const [ratingRange, setRatingRange] = useState<{ min: number | null; max: number | null } | null>(null);
+  
+  // 排名维度状态
+  const [activeRankingDimension, setActiveRankingDimension] = useState<RankingDimension>('solveCount');
 
   // 当用户列表变化时，重置选中索引和筛选
   useEffect(() => {
@@ -376,6 +380,18 @@ function App() {
               users={users} 
               activeIndex={activeUserIndex} 
               onSelect={setActiveUserIndex} 
+            />
+          </section>
+        )}
+
+        {/* 多人排名面板（2人及以上显示） */}
+        {!loading && users.length >= 2 && (
+          <section className="mb-6">
+            <RankingBoard
+              users={users}
+              submissions={submissions}
+              activeDimension={activeRankingDimension}
+              onDimensionChange={setActiveRankingDimension}
             />
           </section>
         )}

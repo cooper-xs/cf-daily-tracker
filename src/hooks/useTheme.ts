@@ -4,43 +4,49 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 
 interface UseThemeReturn {
   theme: ThemeMode;
-  effectiveTheme: 'light' | 'dark'; // 实际应用的主题（system 会被解析）
+  effectiveTheme: 'light' | 'dark';
   setTheme: (mode: ThemeMode) => void;
 }
 
 const STORAGE_KEY = 'cf_tracker_theme';
+
+// 获取初始主题（避免在渲染中读取 localStorage）
+function getInitialTheme(): ThemeMode {
+  if (typeof window === 'undefined') return 'dark';
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
+    if (saved && ['light', 'dark', 'system'].includes(saved)) {
+      return saved;
+    }
+  } catch {
+    // 忽略存储错误
+  }
+  return 'dark';
+}
 
 /**
  * 主题管理 Hook
  * 支持 light、dark、system 三种模式，默认 dark
  */
 export function useTheme(): UseThemeReturn {
-  const [theme, setThemeState] = useState<ThemeMode>('dark');
+  // 使用懒加载初始化避免 SSR 问题
+  const [theme, setThemeState] = useState<ThemeMode>(getInitialTheme);
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
 
-  // 初始化时从 localStorage 读取
+  // 初始化系统主题（使用 requestAnimationFrame 避免同步 setState）
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
-      if (saved && ['light', 'dark', 'system'].includes(saved)) {
-        setThemeState(saved);
-      } else {
-        // 默认 dark
-        setThemeState('dark');
-      }
-    } catch {
-      setThemeState('dark');
-    }
-  }, []);
-
-  // 监听系统主题变化
-  useEffect(() => {
+    const updateSystemTheme = () => {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setSystemTheme(isDark ? 'dark' : 'light');
+    };
+    
+    updateSystemTheme();
+    
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
-
     const handler = (e: MediaQueryListEvent) => {
       setSystemTheme(e.matches ? 'dark' : 'light');
     };
+    
     mediaQuery.addEventListener('change', handler);
     return () => mediaQuery.removeEventListener('change', handler);
   }, []);

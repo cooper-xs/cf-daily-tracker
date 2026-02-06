@@ -7,3 +7,5 @@ export { LanguageSwitcher } from './LanguageSwitcher';
 export { ThemeSwitcher } from './ThemeSwitcher';
 export { ErrorMessage } from './ErrorMessage';
 export { DateRangePicker } from './DateRangePicker';
+export { RankingBoard } from './RankingBoard';
+export type { RankingDimension } from './RankingTab';
