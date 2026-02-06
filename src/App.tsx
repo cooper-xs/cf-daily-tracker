@@ -99,11 +99,26 @@ function UserTabs({ users, activeIndex, onSelect }: UserTabsProps) {
  * 精简用户信息面板（吸顶时使用，不可展开）
  */
 interface CompactUserPanelProps {
-  user: CFUser;
+  user: CFUser | undefined;
   submissionCount: number;
 }
 
 function CompactUserPanel({ user, submissionCount }: CompactUserPanelProps) {
+  // 防御性检查：用户可能为 undefined（切换角色时索引越界）
+  if (!user) {
+    return (
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+          <div>
+            <div className="font-semibold text-gray-400 dark:text-gray-500">Loading...</div>
+            <div className="text-xs text-gray-400 dark:text-gray-500">--</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3 px-4 py-3">
@@ -342,7 +357,7 @@ function App() {
         )}
 
         {/* 固定用户信息 & 筛选面板（滚动后显示） */}
-        {!loading && users.length > 0 && showStickyHeader && (
+        {!loading && users.length > 0 && activeUser && showStickyHeader && (
           <div className="fixed top-16 left-0 right-0 z-40 shadow-lg">
             <div className="max-w-4xl mx-auto px-4">
               {/* 吸顶时只显示精简用户信息（不可展开） */}
@@ -364,7 +379,7 @@ function App() {
         )}
 
         {/* 用户提交记录 */}
-        {!loading && users.length > 0 && (
+        {!loading && users.length > 0 && activeUser && (
           <section className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800">
             {/* 文档流中的用户信息（始终存在，吸顶时会被遮挡） */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
