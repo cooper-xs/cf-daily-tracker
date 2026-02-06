@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface DateRangePickerProps {
@@ -15,16 +15,42 @@ function getUTC8DateString(): string {
 }
 
 /**
+ * 格式化日期显示 - 国际化格式
+ * 根据当前语言返回不同格式
+ */
+function formatDateDisplay(dateStr: string, language: string): string {
+  if (!dateStr) return '';
+  
+  const date = new Date(dateStr + 'T00:00:00');
+  const isEnglish = language.startsWith('en');
+  
+  if (isEnglish) {
+    // 英文格式: Feb 6, 2026
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }
+  
+  // 中文格式: 2026-02-06 (ISO 格式，避免年月日)
+  return dateStr;
+}
+
+/**
  * 日期范围选择组件
  * 支持 UTC+8 时区，粒度为日
+ * 移动端优化：自定义日期显示样式
  */
 export function DateRangePicker({
   startDate,
   endDate,
   onChange,
 }: DateRangePickerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const today = getUTC8DateString();
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
 
   // 快捷选项：今天、昨天、近7天、近30天
   const shortcuts = [
@@ -74,6 +100,7 @@ export function DateRangePicker({
 
   const handleStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStart = e.target.value;
+    setShowStartPicker(false);
     // 确保开始日期不超过结束日期
     if (newStart > endDate) {
       onChange(newStart, newStart);
@@ -84,12 +111,22 @@ export function DateRangePicker({
 
   const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEnd = e.target.value;
+    setShowEndPicker(false);
     // 确保结束日期不早于开始日期
     if (newEnd < startDate) {
       onChange(newEnd, newEnd);
     } else {
       onChange(startDate, newEnd);
     }
+  };
+
+  // 计算日期范围描述
+  const getDateRangeLabel = () => {
+    if (startDate === endDate) {
+      if (startDate === today) return t('date.today');
+      return formatDateDisplay(startDate, i18n.language);
+    }
+    return `${formatDateDisplay(startDate, i18n.language)} - ${formatDateDisplay(endDate, i18n.language)}`;
   };
 
   return (
@@ -119,55 +156,82 @@ export function DateRangePicker({
         })}
       </div>
 
-      {/* 日期选择 - 美化版 */}
-      <div className="flex items-center gap-3">
+      {/* 日期选择 - 移动端优化版 */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* 开始日期 */}
         <div className="flex-1">
           <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
             {t('date.startDate')}
           </label>
-          <div className="relative group">
-            <input
-              type="date"
-              value={startDate}
-              onChange={handleStartChange}
-              max={today}
+          <div className="relative">
+            {/* 自定义显示按钮 */}
+            <button
+              type="button"
+              onClick={() => setShowStartPicker(true)}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700
                          bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100
-                         focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400
                          hover:bg-white dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600
-                         transition-all cursor-pointer
-                         [color-scheme:light] dark:[color-scheme:dark]"
-            />
-            <div className="absolute inset-0 rounded-xl pointer-events-none border-2 border-transparent group-hover:border-blue-200 dark:group-hover:border-blue-800/50 transition-colors" />
+                         transition-all text-left text-sm"
+            >
+              {formatDateDisplay(startDate, i18n.language)}
+            </button>
+            {/* 隐藏的原生 date input */}
+            {showStartPicker && (
+              <input
+                type="date"
+                value={startDate}
+                onChange={handleStartChange}
+                onBlur={() => setShowStartPicker(false)}
+                max={today}
+                autoFocus
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+            )}
           </div>
         </div>
 
-        <div className="pt-6">
-          <div className="w-8 h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
+        {/* 分隔符 */}
+        <div className="pt-5">
+          <div className="w-4 sm:w-8 h-0.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
         </div>
 
+        {/* 结束日期 */}
         <div className="flex-1">
           <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5 ml-1">
             {t('date.endDate')}
           </label>
-          <div className="relative group">
-            <input
-              type="date"
-              value={endDate}
-              onChange={handleEndChange}
-              max={today}
+          <div className="relative">
+            {/* 自定义显示按钮 */}
+            <button
+              type="button"
+              onClick={() => setShowEndPicker(true)}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700
                          bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100
-                         focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400
                          hover:bg-white dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600
-                         transition-all cursor-pointer
-                         [color-scheme:light] dark:[color-scheme:dark]"
-            />
-            <div className="absolute inset-0 rounded-xl pointer-events-none border-2 border-transparent group-hover:border-blue-200 dark:group-hover:border-blue-800/50 transition-colors" />
+                         transition-all text-left text-sm"
+            >
+              {formatDateDisplay(endDate, i18n.language)}
+            </button>
+            {/* 隐藏的原生 date input */}
+            {showEndPicker && (
+              <input
+                type="date"
+                value={endDate}
+                onChange={handleEndChange}
+                onBlur={() => setShowEndPicker(false)}
+                max={today}
+                autoFocus
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+            )}
           </div>
         </div>
       </div>
 
+      {/* 当前范围提示（移动端显示） */}
+      <div className="sm:hidden text-xs text-gray-500 dark:text-gray-400 text-center">
+        {getDateRangeLabel()}
+      </div>
     </div>
   );
 }
