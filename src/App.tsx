@@ -242,7 +242,7 @@ function getRatingColor(rating: number): string {
 }
 
 // 应用版本号（与 package.json 保持一致）
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 
 /**
  * 主应用组件
