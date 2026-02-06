@@ -61,7 +61,12 @@ export function TagInput({
   // 从最近使用添加标签
   const addTagFromRecent = (handle: string) => {
     addTag(handle);
-    inputRef.current?.focus();
+    // 保持下拉框显示，方便连续选择
+    setShowRecent(true);
+    // 使用 setTimeout 确保在状态更新后聚焦
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
   };
 
   // 删除标签
@@ -175,13 +180,10 @@ export function TagInput({
     setHighlightedIndex(-1);
   }, [availableRecentUsers.length]);
 
-  // 当聚焦时显示历史面板，失焦时隐藏
+  // 当聚焦时显示历史面板
   useEffect(() => {
     if (isFocused) {
       setShowRecent(true);
-    } else {
-      setShowRecent(false);
-      setHighlightedIndex(-1);
     }
   }, [isFocused]);
 
