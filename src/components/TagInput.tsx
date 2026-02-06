@@ -8,6 +8,7 @@ interface TagInputProps {
   onAddRecentUser?: (handle: string) => void;
   onRemoveRecentUser?: (handle: string) => void;
   onClearRecentUsers?: () => void;
+  initialTags?: string[];
 }
 
 /**
@@ -23,6 +24,7 @@ export function TagInput({
   onAddRecentUser,
   onRemoveRecentUser,
   onClearRecentUsers,
+  initialTags = [],
 }: TagInputProps) {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState('');
@@ -33,6 +35,13 @@ export function TagInput({
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const recentItemsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  // 初始标签自动填充
+  useEffect(() => {
+    if (initialTags.length > 0 && tags.length === 0) {
+      setTags(initialTags.slice(0, 10));
+    }
+  }, [initialTags]);
 
   // 点击外部关闭最近使用面板
   useEffect(() => {

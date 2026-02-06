@@ -37,6 +37,9 @@ export function useUserQuery() {
     queryEndDate: null,
   });
 
+  // 上次查询记录
+  const { saveLastQuery } = useLastQuery();
+
   const setDateRange = useCallback((startDate: string, endDate: string) => {
     setState(prev => ({ ...prev, startDate, endDate }));
   }, []);
@@ -79,6 +82,9 @@ export function useUserQuery() {
       
       // 保存搜索历史
       addSearchHistory(handles);
+      
+      // 保存上次查询记录
+      saveLastQuery(handles, queryStart, queryEnd);
 
       setState(prev => ({
         ...prev,
@@ -223,6 +229,55 @@ export function useSystemTheme() {
   }, []);
 
   return isDark;
+}
+
+/**
+ * 上次查询记录 Hook
+ * 自动保存和恢复上次查询的用户和日期范围
+ */
+export function useLastQuery() {
+  const [lastQuery, setLastQuery] = useState<{ handles: string[]; startDate: string; endDate: string } | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const STORAGE_KEY = 'cf_tracker_last_query';
+
+  // 从本地存储加载
+  useEffect(() => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed && Array.isArray(parsed.handles) && parsed.startDate && parsed.endDate) {
+          setLastQuery(parsed);
+        }
+      }
+    } catch {
+      // 忽略错误
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // 保存查询记录
+  const saveLastQuery = useCallback((handles: string[], startDate: string, endDate: string) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ handles, startDate, endDate }));
+      setLastQuery({ handles, startDate, endDate });
+    } catch {
+      // 忽略存储错误
+    }
+  }, []);
+
+  // 清除查询记录
+  const clearLastQuery = useCallback(() => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      setLastQuery(null);
+    } catch {
+      // 忽略错误
+    }
+  }, []);
+
+  return { lastQuery, isLoaded, saveLastQuery, clearLastQuery };
 }
 
 export { useTheme } from './useTheme';

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TagInput, UserCard, SubmissionList, SubmissionFilterPanel, LanguageSwitcher, ThemeSwitcher, ErrorMessage, DateRangePicker, RankingBoard } from './components';
-import { useUserQuery, useTheme, useSearchHistory } from './hooks';
+import { useUserQuery, useTheme, useSearchHistory, useLastQuery } from './hooks';
 import './i18n';
 import type { CFUser } from './types';
 import type { RankingDimension } from './components';
@@ -274,6 +274,7 @@ function App() {
   const { theme, setTheme } = useTheme();
   const { loading, error, users, submissions, startDate, endDate, queryStartDate, queryEndDate, setDateRange, queryUsersByHandles, clearError } = useUserQuery();
   const { history, addToHistory, removeFromHistory, clearHistory } = useSearchHistory();
+  const { lastQuery, isLoaded: lastQueryLoaded } = useLastQuery();
   
   // 当前选中的用户索引
   const [activeUserIndex, setActiveUserIndex] = useState(0);
@@ -288,6 +289,21 @@ function App() {
   
   // 排名维度状态
   const [activeRankingDimension, setActiveRankingDimension] = useState<RankingDimension>('solveCount');
+  
+  // 自动填充上次查询记录
+  const [autoFilled, setAutoFilled] = useState(false);
+  const [initialHandles, setInitialHandles] = useState<string[]>([]);
+
+  // 加载上次查询记录
+  useEffect(() => {
+    if (lastQueryLoaded && lastQuery && !autoFilled) {
+      // 设置日期范围
+      setDateRange(lastQuery.startDate, lastQuery.endDate);
+      // 保存 handles 供 TagInput 使用
+      setInitialHandles(lastQuery.handles);
+      setAutoFilled(true);
+    }
+  }, [lastQueryLoaded, lastQuery, autoFilled, setDateRange]);
 
   // 当用户列表变化时，重置选中索引和筛选
   useEffect(() => {
@@ -358,6 +374,7 @@ function App() {
             onAddRecentUser={addToHistory}
             onRemoveRecentUser={removeFromHistory}
             onClearRecentUsers={clearHistory}
+            initialTags={initialHandles}
           />
         </section>
 
