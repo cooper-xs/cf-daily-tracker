@@ -494,7 +494,15 @@ function App() {
                 @cooper-xs
               </a>
               <span className="text-gray-300 dark:text-gray-600">·</span>
-              <span className="font-medium text-gray-600 dark:text-gray-300">@yume</span>
+              <a
+                href="https://codeforces.com/profile/yume7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-[#ff8c00] hover:text-[#ff9f2e] transition-colors"
+                style={{ color: '#ff8c00' }}
+              >
+                @yume
+              </a>
               <span className="text-gray-300 dark:text-gray-600">·</span>
               <span className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">@TARS</span>
             </span>
