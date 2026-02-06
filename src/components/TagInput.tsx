@@ -74,8 +74,7 @@ export function TagInput({
     onSearch(handles);
     // 记录到最近使用
     handles.forEach(handle => onAddRecentUser?.(handle));
-    setTags([]);
-    setInputValue('');
+    // 保留输入框内容，便于用户继续编辑或重新搜索
     setShowRecent(false);
   };
 

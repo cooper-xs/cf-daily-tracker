@@ -70,7 +70,13 @@ export function SubmissionFilterPanel({
       if (resultFilter === 'rejected' && sub.verdict === 'OK') return false;
       if (ratingRange && ratingRange.min !== null && ratingRange.max !== null) {
         const rating = sub.problem.rating;
-        if (rating === undefined || rating === null || rating < ratingRange.min || rating > ratingRange.max) return false;
+        // 未定分筛选 (min: -1, max: -1)
+        if (ratingRange.min === -1 && ratingRange.max === -1) {
+          if (rating !== undefined && rating !== null) return false;
+        } else {
+          // 正常 rating 筛选
+          if (rating === undefined || rating === null || rating < ratingRange.min || rating > ratingRange.max) return false;
+        }
       }
       return true;
     }).length;
@@ -173,7 +179,13 @@ export function SubmissionList({
       // Rating 筛选
       if (ratingRange && ratingRange.min !== null && ratingRange.max !== null) {
         const rating = sub.problem.rating;
-        if (rating === undefined || rating === null || rating < ratingRange.min || rating > ratingRange.max) return false;
+        // 未定分筛选 (min: -1, max: -1)
+        if (ratingRange.min === -1 && ratingRange.max === -1) {
+          if (rating !== undefined && rating !== null) return false;
+        } else {
+          // 正常 rating 筛选
+          if (rating === undefined || rating === null || rating < ratingRange.min || rating > ratingRange.max) return false;
+        }
       }
       
       return true;
