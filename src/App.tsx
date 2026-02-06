@@ -241,6 +241,9 @@ function getRatingColor(rating: number): string {
   return '#ff0000';
 }
 
+// 应用版本号（与 package.json 保持一致）
+const APP_VERSION = '1.0.2';
+
 /**
  * 主应用组件
  */
@@ -476,7 +479,7 @@ function App() {
           </div>
 
           {/* 署名 */}
-          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400 mb-3">
             <span className="flex items-center justify-center gap-1 flex-wrap">
               <span>Made with</span>
               <span className="text-red-500 animate-pulse">❤️</span>
@@ -495,6 +498,11 @@ function App() {
               <span className="font-medium bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">@TARS</span>
               <span>🤖</span>
             </span>
+          </div>
+
+          {/* 版本号 */}
+          <div className="text-center text-xs text-gray-400 dark:text-gray-500">
+            <span>v{APP_VERSION}</span>
           </div>
         </div>
       </footer>
