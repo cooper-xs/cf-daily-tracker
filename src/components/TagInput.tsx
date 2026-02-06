@@ -14,6 +14,7 @@ interface TagInputProps {
  * 标签式用户输入组件
  * 支持回车生成标签，可批量输入多个用户名
  * 支持最近使用用户快速添加
+ * 支持键盘方向键选择历史用户
  */
 export function TagInput({ 
   onSearch, 
@@ -28,8 +29,10 @@ export function TagInput({
   const [tags, setTags] = useState<string[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const recentItemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   // 点击外部关闭最近使用面板
   useEffect(() => {
@@ -79,6 +82,7 @@ export function TagInput({
   // 处理键盘事件
   // 回车：添加标签
   // Shift+回车：执行搜索
+  // 方向键：选择历史用户
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -86,14 +90,35 @@ export function TagInput({
         // Shift+回车：执行搜索
         handleSearch();
       } else {
-        // 普通回车：添加标签
-        if (inputValue.trim()) {
+        // 普通回车：添加标签或选择高亮的历史用户
+        if (highlightedIndex >= 0 && highlightedIndex < availableRecentUsers.length) {
+          addTagFromRecent(availableRecentUsers[highlightedIndex]);
+          setHighlightedIndex(-1);
+        } else if (inputValue.trim()) {
           addTag(inputValue);
         } else if (tags.length > 0) {
           // 输入框为空但有标签时，直接搜索
           saveAndSearch(tags);
         }
       }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (availableRecentUsers.length > 0) {
+        setHighlightedIndex(prev => 
+          prev < availableRecentUsers.length - 1 ? prev + 1 : 0
+        );
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (availableRecentUsers.length > 0) {
+        setHighlightedIndex(prev => 
+          prev > 0 ? prev - 1 : availableRecentUsers.length - 1
+        );
+      }
+    } else if (e.key === 'Escape') {
+      // ESC 关闭历史面板并重置高亮
+      setHighlightedIndex(-1);
+      setShowRecent(false);
     } else if (e.key === 'Backspace' && !inputValue && tags.length > 0) {
       // 输入框为空时按退格，删除最后一个标签
       removeTag(tags.length - 1);
@@ -146,14 +171,30 @@ export function TagInput({
     user => !tags.some(tag => tag.toLowerCase() === user.toLowerCase())
   );
 
+  // 当可用历史用户变化时，重置高亮索引
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [availableRecentUsers.length]);
+
   // 当聚焦时显示历史面板，失焦时隐藏
   useEffect(() => {
     if (isFocused) {
       setShowRecent(true);
     } else {
       setShowRecent(false);
+      setHighlightedIndex(-1);
     }
   }, [isFocused]);
+
+  // 滚动高亮项到可视区域
+  useEffect(() => {
+    if (highlightedIndex >= 0 && recentItemsRef.current[highlightedIndex]) {
+      recentItemsRef.current[highlightedIndex]?.scrollIntoView({
+        block: 'nearest',
+        behavior: 'smooth',
+      });
+    }
+  }, [highlightedIndex]);
 
   return (
     <div ref={containerRef} className="w-full space-y-3 relative">
@@ -267,42 +308,51 @@ export function TagInput({
           {/* 历史用户标签云 */}
           <div className="max-h-[180px] overflow-y-auto p-3">
             <div className="flex flex-wrap gap-2">
-              {availableRecentUsers.map((user, index) => (
-                <div
-                  key={`${user}-${index}`}
-                  className="group inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg
-                             bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40
-                             text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300
-                             text-sm font-medium transition-all cursor-pointer"
-                >
-                  <button
-                    type="button"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      addTagFromRecent(user);
-                    }}
-                    className="flex-1"
+              {availableRecentUsers.map((user, index) => {
+                const isHighlighted = index === highlightedIndex;
+                return (
+                  <div
+                    key={`${user}-${index}`}
+                    ref={el => { recentItemsRef.current[index] = el; }}
+                    className={`group inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg
+                               text-sm font-medium transition-all cursor-pointer
+                               ${isHighlighted
+                                 ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-500/50'
+                                 : 'bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                               }`}
                   >
-                    {user}
-                  </button>
-                  {onRemoveRecentUser && (
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRemoveRecentUser(user);
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        addTagFromRecent(user);
                       }}
-                      className="w-4 h-4 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600
-                                 flex items-center justify-center transition-colors ml-0.5"
-                      title="删除"
+                      className="flex-1"
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                      {user}
                     </button>
-                  )}
-                </div>
-              ))}
+                    {onRemoveRecentUser && (
+                      <button
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          onRemoveRecentUser(user);
+                        }}
+                        className={`w-4 h-4 rounded-full flex items-center justify-center transition-colors ml-0.5
+                                   ${isHighlighted
+                                     ? 'hover:bg-blue-400 text-white'
+                                     : 'hover:bg-gray-300 dark:hover:bg-gray-600'
+                                   }`}
+                        title="删除"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
